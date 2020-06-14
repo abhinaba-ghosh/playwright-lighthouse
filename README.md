@@ -6,7 +6,9 @@
 
 [Lighthouse](https://developers.google.com/web/tools/lighthouse) is a tool developed by Google that analyzes web apps and web pages, collecting modern performance metrics and insights on developer best practices.
 
-The purpose of this package is to produce performance report for several pages in connected mode and in an automated (programmatic) way.
+[Playwright](https://www.npmjs.com/package/playwright) is a Node library to automate Chromium, Firefox and WebKit with a single API. Playwright is built to enable cross-browser web automation that is ever-green, capable, reliable and fast.
+
+The purpose of this package is to produce web audit report for several pages in connected mode and in an automated (programmatic) way.
 
 ## Usage
 

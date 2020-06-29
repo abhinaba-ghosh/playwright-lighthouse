@@ -1,8 +1,8 @@
 const { playAudit } = require('../index');
 const playwright = require('playwright');
 
-describe('audit example', () => {
-  it('audits page', async () => {
+describe('reports example', () => {
+  it('writes reports', async () => {
     const browser = await playwright['chromium'].launch({
       args: ['--remote-debugging-port=9222'],
     });
@@ -10,13 +10,14 @@ describe('audit example', () => {
     await page.goto('https://angular.io/');
 
     await playAudit({
+      reports: {
+        json: true,
+        html: true,
+        csv: true
+      },
       page: page,
       thresholds: {
-        performance: 50,
-        accessibility: 50,
-        'best-practices': 50,
-        seo: 50,
-        pwa: 50,
+        performance: 50
       },
       port: 9222,
     });

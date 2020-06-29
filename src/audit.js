@@ -12,6 +12,12 @@ const defaultThresholds = {
   pwa: 100,
 };
 
+const defaultReports = {
+  csv: false,
+  html: false,
+  json: false
+};
+
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
 let playAudit = async function (auditConfig = {}) {
@@ -42,10 +48,11 @@ let playAudit = async function (auditConfig = {}) {
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
     config: auditConfig.config,
+    reports: auditConfig.reports || defaultReports,
     htmlReport: auditConfig.htmlReport || false,
     reportDir: auditConfig.reportDir || `${process.cwd()}/lighthouse`,
     reportName:
-      auditConfig.reportName || `lighthouse-${new Date().getTime()}.html`,
+      auditConfig.reportName || `lighthouse-${new Date().getTime()}`,
     cdpPort: auditConfig.cdpPort,
   });
 

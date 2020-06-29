@@ -6,9 +6,9 @@ export interface playwrightLighthouseConfig {
   thresholds?: any;
   opts?: any;
   config?: any;
-  htmlReport?: boolean;
-  reportDir?: string;
-  reportName?: string;
+  reports?: {};
+  directory?: string;
+  name?: string;
 }
 
 /**

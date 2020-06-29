@@ -13,9 +13,13 @@ const defaultThresholds = {
 };
 
 const defaultReports = {
-  csv: false,
-  html: false,
-  json: false
+  formats: {
+    csv: false,
+    html: false,
+    json: false
+  },
+  name: `lighthouse-${new Date().getTime()}`,
+  directory:  `${process.cwd()}/lighthouse`
 };
 
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
@@ -43,16 +47,17 @@ let playAudit = async function (auditConfig = {}) {
     );
   }
 
+  const reportsConfig = {
+    ...defaultReports,
+    ...auditConfig.reports,
+  };
+
   const { errors, results } = await lighthouse({
     url: auditConfig.page.url(),
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
     config: auditConfig.config,
-    reports: auditConfig.reports || defaultReports,
-    htmlReport: auditConfig.htmlReport || false,
-    reportDir: auditConfig.reportDir || `${process.cwd()}/lighthouse`,
-    reportName:
-      auditConfig.reportName || `lighthouse-${new Date().getTime()}`,
+    reports: reportsConfig,
     cdpPort: auditConfig.cdpPort,
   });
 

@@ -1,8 +1,14 @@
+const fs = require('fs');
 const { playAudit } = require('../index');
 const playwright = require('playwright');
+const chai = require('chai')
+const expect = chai.expect
 
 describe('reports example', () => {
-  it('writes reports', async () => {
+  it('writes json and html reports', async () => {
+    const reportDirectory = `${process.cwd()}/lighthouse`;
+    const reportFilename = `lighthouse-${new Date().getTime()}`;
+
     const browser = await playwright['chromium'].launch({
       args: ['--remote-debugging-port=9222'],
     });
@@ -11,9 +17,13 @@ describe('reports example', () => {
 
     await playAudit({
       reports: {
-        json: true,
-        html: true,
-        csv: true
+        formats: {
+          json: true,
+          html: true,
+          csv: false
+        },
+        name: reportFilename,
+        directory:  reportDirectory
       },
       page: page,
       thresholds: {
@@ -21,6 +31,12 @@ describe('reports example', () => {
       },
       port: 9222,
     });
+
+    const jsonFile = reportDirectory +  "/" + reportFilename + ".json";
+    expect(fs.existsSync(jsonFile), `${jsonFile} does not exist.`).to.be.true;
+
+    const htmlFile = reportDirectory +  "/" + reportFilename + ".html";
+    expect(fs.existsSync(jsonFile), `${htmlFile} does not exist.`).to.equal(true);
 
     await browser.close();
   });

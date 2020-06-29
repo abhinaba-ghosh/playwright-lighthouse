@@ -21,18 +21,6 @@ const compare = (thresholds, newValue) => {
   return { errors, results };
 };
 
-// if removed, would be a breaking change
-const getHtmlReport = async (lhr, dir, name) => {
-  name = name.substr(0, name.lastIndexOf('.')) || name;
-  const html = ReportGenerator.generateReport(lhr, 'html');
-  try {
-    await fs.mkdirSync(dir, { recursive: true });
-    await fs.writeFileSync(`${dir}/${name}.html`, html);
-  } catch (err) {
-    throw err;
-  }
-};
-
 const getReport = async (lhr, dir, name, type) => {
   const validTypes = ['csv', 'html', 'json'];
   name = name.substr(0, name.lastIndexOf('.')) || name;
@@ -46,8 +34,7 @@ const getReport = async (lhr, dir, name, type) => {
       throw err;
     }
   } else {
-    console.log(`Invalid report type specified: ${type} Skipping...)`)
-    // throw new Error(`Invalid report type specified: ${type})`);
+    console.log(`Invalid report type specified: ${type} Skipping Reports...)`)
   }
 };
 
@@ -57,9 +44,6 @@ exports.lighthouse = async ({
   opts = {},
   config,
   reports,
-  htmlReport,
-  reportDir,
-  reportName,
   cdpPort,
 }) => {
   opts.port = cdpPort;
@@ -81,16 +65,11 @@ exports.lighthouse = async ({
     {}
   );
 
-  for (var typeFromKey in reports){
-    var value = reports[typeFromKey];
+  for (var typeFromKey in reports['formats']){
+    var value = reports['formats'][typeFromKey];
     if (value) {
-      await getReport(results.lhr, reportDir, reportName, typeFromKey);
+      await getReport(results.lhr, reports['directory'], reports['name'], typeFromKey);
     }
-  }
-
-  // leaving in order to avoid a breaking change
-  if (htmlReport) {
-    await getHtmlReport(results.lhr, reportDir, reportName);
   }
 
   return compare(thresholds, newValues);

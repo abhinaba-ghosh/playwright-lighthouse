@@ -125,21 +125,25 @@ await playAudit({
 });
 ```
 
-## Generating HTML audit report
+## Generating audit reports
 
-`playwright-lighthouse` library can produce very famous Lighthouse HTML audit report, that you can host in your CI server. This report is really necessary to check the detailed report.
+`playwright-lighthouse` library can produce  Lighthouse CSV, HTML and JSON audit reports, that you can host in your CI server. These reports can be useful for ongoing audits and monitoring from build to build.
 
 ```js
 await playAudit({
   /* ... other configurations */
 
-  htmlReport: true, //defaults to false
-  reportDir: `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
-  reportName: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}.html`
+  reports: {
+    json: true, //defaults to false
+    html: true, //defaults to false
+    csv: true //defaults to false
+  },
+  name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
+  directory:  `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
 });
 ```
 
-This will result in below HTML report
+Sample HTML report:
 
 ![screen](./docs/lighthouse_report.png)
 

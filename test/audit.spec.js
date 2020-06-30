@@ -2,13 +2,19 @@ const { playAudit } = require('../index');
 const playwright = require('playwright');
 
 describe('audit example', () => {
-  it('audits page', async () => {
-    const browser = await playwright['chromium'].launch({
+  before(async () => {
+    browser = await playwright['chromium'].launch({
       args: ['--remote-debugging-port=9222'],
     });
-    const page = await browser.newPage();
+    page = await browser.newPage();
     await page.goto('https://angular.io/');
+  });
 
+  after(async () => {
+    await browser.close()
+  });
+
+  it('audits page', async () => {
     await playAudit({
       page: page,
       thresholds: {
@@ -20,7 +26,5 @@ describe('audit example', () => {
       },
       port: 9222,
     });
-
-    await browser.close();
   });
 });

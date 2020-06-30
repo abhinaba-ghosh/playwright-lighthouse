@@ -1,19 +1,35 @@
 const fs = require('fs');
 const { playAudit } = require('../index');
 const playwright = require('playwright');
-const chai = require('chai')
-const expect = chai.expect
+const chai = require('chai');
+const expect = chai.expect;
 
 describe('reports example', () => {
-  it('writes json and html reports', async () => {
-    const reportDirectory = `${process.cwd()}/lighthouse`;
-    const reportFilename = `lighthouse-${new Date().getTime()}`;
+  before(async () => {
+    reportDirectory = `${process.cwd()}/lighthouse`;
+    reportFilename = 'reports-test';
+    reportFileTypes = ['html', 'json']
+    reportFileTypes.forEach((type) => {
+      var fileToDelete = `${reportDirectory}/${reportFilename}.${type}`;
+      if (fs.existsSync(fileToDelete)) {
+        fs.unlinkSync(fileToDelete);
+      };
+    });
 
-    const browser = await playwright['chromium'].launch({
+    browser = await playwright['chromium'].launch({
       args: ['--remote-debugging-port=9222'],
     });
-    const page = await browser.newPage();
+    page = await browser.newPage();
     await page.goto('https://angular.io/');
+  });
+
+  after(async () => {
+    await browser.close()
+  });
+
+  it('writes json and html reports', async () => {
+    const reportDirectory = `${process.cwd()}/lighthouse`;
+    const reportFilename = 'reports-test';
 
     await playAudit({
       reports: {
@@ -32,12 +48,11 @@ describe('reports example', () => {
       port: 9222,
     });
 
-    const jsonFile = reportDirectory +  "/" + reportFilename + ".json";
-    expect(fs.existsSync(jsonFile), `${jsonFile} does not exist.`).to.be.true;
-
-    const htmlFile = reportDirectory +  "/" + reportFilename + ".html";
-    expect(fs.existsSync(jsonFile), `${htmlFile} does not exist.`).to.equal(true);
-
-    await browser.close();
+    reportFileTypes.forEach((type) => {
+      reportFileTypes.forEach((type) => {
+        expect(fs.existsSync(`${reportDirectory}/${reportFilename}.${type}`), 
+          `${type} Report file does not exist.`).to.be.true;
+      });
+    });  
   });
 });

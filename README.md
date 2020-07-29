@@ -139,9 +139,9 @@ await playAudit({
       html: true, //defaults to false
       csv: true //defaults to false
     },
+    name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
+    directory:  `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
   },
-  name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
-  directory:  `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
 });
 ```
 

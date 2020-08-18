@@ -125,6 +125,20 @@ await playAudit({
 });
 ```
 
+Sometimes it's important to pass a parameter *disableStorageReset* as false. You can easily make it like this:
+
+```js
+    const opts = {
+      disableStorageReset: false,
+    };
+
+    await playAudit({
+      page,
+      port: 9222,
+      opts,
+    });
+```
+
 ## Generating audit reports
 
 `playwright-lighthouse` library can produce  Lighthouse CSV, HTML and JSON audit reports, that you can host in your CI server. These reports can be useful for ongoing audits and monitoring from build to build.

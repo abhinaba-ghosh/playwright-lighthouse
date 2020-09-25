@@ -12,7 +12,7 @@ The purpose of this package is to produce web audit report for several pages in 
 
 ### Installation
 
-You can have to add the `playwright-lighthouse` library as a dependency (or dev-dependency) in your project
+You can add the `playwright-lighthouse` library as a dependency (or dev-dependency) in your project
 
 ```sh
 $ yarn add -D playwright-lighthouse

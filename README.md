@@ -1,6 +1,8 @@
 ## Lighthouse Playwright - NPM Package
 
 [![NPM release](https://img.shields.io/npm/v/playwright-lighthouse.svg 'NPM release')](https://www.npmjs.com/package/playwright-lighthouse)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![NPM Downloads](https://img.shields.io/npm/dt/playwright-lighthouse.svg?style=flat-square)](https://www.npmjs.com/package/playwright-lighthouse)
 
 [Lighthouse](https://developers.google.com/web/tools/lighthouse) is a tool developed by Google that analyzes web apps and web pages, collecting modern performance metrics and insights on developer best practices.
 
@@ -33,20 +35,20 @@ const { playAudit } = require('playwright-lighthouse');
 const playwright = require('playwright');
 
 describe('audit example', () => {
-  it('open browser', async () => {
-    const browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9222'],
-    });
-    const page = await browser.newPage();
-    await page.goto('https://angular.io/');
+    it('open browser', async () => {
+        const browser = await playwright['chromium'].launch({
+            args: ['--remote-debugging-port=9222'],
+        });
+        const page = await browser.newPage();
+        await page.goto('https://angular.io/');
 
-    await playAudit({
-      page: page,
-      port: 9222,
-    });
+        await playAudit({
+            page: page,
+            port: 9222,
+        });
 
-    await browser.close();
-  });
+        await browser.close();
+    });
 });
 ```
 
@@ -61,27 +63,27 @@ const { playAudit } = require('playwright-lighthouse');
 const playwright = require('playwright');
 
 describe('audit example', () => {
-  it('open browser', async () => {
-    const browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9222'],
-    });
-    const page = await browser.newPage();
-    await page.goto('https://angular.io/');
+    it('open browser', async () => {
+        const browser = await playwright['chromium'].launch({
+            args: ['--remote-debugging-port=9222'],
+        });
+        const page = await browser.newPage();
+        await page.goto('https://angular.io/');
 
-    await playAudit({
-      page: page,
-      thresholds: {
-        performance: 50,
-        accessibility: 50,
-        'best-practices': 50,
-        seo: 50,
-        pwa: 50,
-      },
-      port: 9222,
-    });
+        await playAudit({
+            page: page,
+            thresholds: {
+                performance: 50,
+                accessibility: 50,
+                'best-practices': 50,
+                seo: 50,
+                pwa: 50,
+            },
+            port: 9222,
+        });
 
-    await browser.close();
-  });
+        await browser.close();
+    });
 });
 ```
 
@@ -91,11 +93,11 @@ You can also make assumptions only on certain metrics. For example, the followin
 
 ```javascript
 await playAudit({
-  page: page,
-  thresholds: {
-    performance: 85,
-  },
-  port: 9222,
+    page: page,
+    thresholds: {
+        performance: 85,
+    },
+    port: 9222,
 });
 ```
 
@@ -107,57 +109,57 @@ You can also pass any argument directly to the Lighthouse module using the secon
 
 ```js
 const thresholdsConfig = {
-  /* ... */
+    /* ... */
 };
 
 const lighthouseOptions = {
-  /* ... your lighthouse options */
+    /* ... your lighthouse options */
 };
 
 const lighthouseConfig = {
-  /* ... your lighthouse configs */
+    /* ... your lighthouse configs */
 };
 
 await playAudit({
-  thresholds: thresholdsConfig,
-  opts: lighthouseOptions,
-  config: lighthouseConfig,
+    thresholds: thresholdsConfig,
+    opts: lighthouseOptions,
+    config: lighthouseConfig,
 
-  /* ... other configurations */
+    /* ... other configurations */
 });
 ```
 
-Sometimes it's important to pass a parameter *disableStorageReset* as false. You can easily make it like this:
+Sometimes it's important to pass a parameter _disableStorageReset_ as false. You can easily make it like this:
 
 ```js
-    const opts = {
-      disableStorageReset: false,
-    };
+const opts = {
+    disableStorageReset: false,
+};
 
-    await playAudit({
-      page,
-      port: 9222,
-      opts,
-    });
+await playAudit({
+    page,
+    port: 9222,
+    opts,
+});
 ```
 
 ## Generating audit reports
 
-`playwright-lighthouse` library can produce  Lighthouse CSV, HTML and JSON audit reports, that you can host in your CI server. These reports can be useful for ongoing audits and monitoring from build to build.
+`playwright-lighthouse` library can produce Lighthouse CSV, HTML and JSON audit reports, that you can host in your CI server. These reports can be useful for ongoing audits and monitoring from build to build.
 
 ```js
 await playAudit({
-  /* ... other configurations */
+    /* ... other configurations */
 
-  reports: {
-    formats: {
-      json: true, //defaults to false
-      html: true, //defaults to false
-      csv: true //defaults to false
+    reports: {
+        formats: {
+            json: true, //defaults to false
+            html: true, //defaults to false
+            csv: true, //defaults to false
+        },
+        name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
+        directory: `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
     },
-    name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
-    directory:  `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
-  },
 });
 ```
 

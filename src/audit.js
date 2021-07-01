@@ -58,7 +58,7 @@ let playAudit = async function (auditConfig = {}) {
     opts: auditConfig.opts,
     config: auditConfig.config,
     reports: reportsConfig,
-    cdpPort: auditConfig.cdpPort,
+    cdpPort: auditConfig.port,
   });
 
   log('\n');

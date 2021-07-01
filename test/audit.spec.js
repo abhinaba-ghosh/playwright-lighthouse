@@ -4,7 +4,7 @@ const playwright = require('playwright');
 describe('audit example', () => {
   before(async () => {
     browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9222'],
+      args: ['--remote-debugging-port=9223'],
     });
     page = await browser.newPage();
     await page.goto('https://angular.io/');
@@ -24,7 +24,7 @@ describe('audit example', () => {
         seo: 50,
         pwa: 50,
       },
-      port: 9222,
+      port: 9223,
     });
   });
 });

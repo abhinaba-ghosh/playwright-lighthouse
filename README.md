@@ -10,8 +10,6 @@
 
 The purpose of this package is to produce web audit report for several pages in connected mode and in an automated (programmatic) way.
 
-:heart: If this library helps you, consider [buy me a coffee](https://www.buymeacoffee.com/abhinabaghosh) :coffee: or [sponsoring](https://www.paypal.com/paypalme/abhinabaghosh) :heart:
-
 ## Usage
 
 ### Installation

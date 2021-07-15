@@ -16,10 +16,10 @@ const defaultReports = {
   formats: {
     csv: false,
     html: false,
-    json: false
+    json: false,
   },
   name: `lighthouse-${new Date().getTime()}`,
-  directory:  `${process.cwd()}/lighthouse`
+  directory: `${process.cwd()}/lighthouse`,
 };
 
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];

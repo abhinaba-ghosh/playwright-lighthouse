@@ -14,12 +14,12 @@ The purpose of this package is to produce web audit report for several pages in 
 
 ### Installation
 
-You can add the `playwright-lighthouse` library as a dependency (or dev-dependency) in your project
+Add the `playwright-lighthouse`, `playwright` & `lighthouse` libraries to your project:
 
 ```sh
-$ yarn add -D playwright-lighthouse
+$ yarn add -D playwright-lighthouse playwright lighthouse
 # or
-$ npm install --save-dev playwright-lighthouse
+$ npm install --save-dev playwright-lighthouse playwright lighthouse
 ```
 
 ### In your code
@@ -33,20 +33,20 @@ const { playAudit } = require('playwright-lighthouse');
 const playwright = require('playwright');
 
 describe('audit example', () => {
-    it('open browser', async () => {
-        const browser = await playwright['chromium'].launch({
-            args: ['--remote-debugging-port=9222'],
-        });
-        const page = await browser.newPage();
-        await page.goto('https://angular.io/');
-
-        await playAudit({
-            page: page,
-            port: 9222,
-        });
-
-        await browser.close();
+  it('open browser', async () => {
+    const browser = await playwright['chromium'].launch({
+      args: ['--remote-debugging-port=9222'],
     });
+    const page = await browser.newPage();
+    await page.goto('https://angular.io/');
+
+    await playAudit({
+      page: page,
+      port: 9222,
+    });
+
+    await browser.close();
+  });
 });
 ```
 
@@ -61,27 +61,27 @@ const { playAudit } = require('playwright-lighthouse');
 const playwright = require('playwright');
 
 describe('audit example', () => {
-    it('open browser', async () => {
-        const browser = await playwright['chromium'].launch({
-            args: ['--remote-debugging-port=9222'],
-        });
-        const page = await browser.newPage();
-        await page.goto('https://angular.io/');
-
-        await playAudit({
-            page: page,
-            thresholds: {
-                performance: 50,
-                accessibility: 50,
-                'best-practices': 50,
-                seo: 50,
-                pwa: 50,
-            },
-            port: 9222,
-        });
-
-        await browser.close();
+  it('open browser', async () => {
+    const browser = await playwright['chromium'].launch({
+      args: ['--remote-debugging-port=9222'],
     });
+    const page = await browser.newPage();
+    await page.goto('https://angular.io/');
+
+    await playAudit({
+      page: page,
+      thresholds: {
+        performance: 50,
+        accessibility: 50,
+        'best-practices': 50,
+        seo: 50,
+        pwa: 50,
+      },
+      port: 9222,
+    });
+
+    await browser.close();
+  });
 });
 ```
 
@@ -91,11 +91,11 @@ You can also make assumptions only on certain metrics. For example, the followin
 
 ```javascript
 await playAudit({
-    page: page,
-    thresholds: {
-        performance: 85,
-    },
-    port: 9222,
+  page: page,
+  thresholds: {
+    performance: 85,
+  },
+  port: 9222,
 });
 ```
 
@@ -107,23 +107,37 @@ You can also pass any argument directly to the Lighthouse module using the secon
 
 ```js
 const thresholdsConfig = {
-    /* ... */
+  /* ... */
 };
 
 const lighthouseOptions = {
-    /* ... your lighthouse options */
+  /* ... your lighthouse options */
 };
 
 const lighthouseConfig = {
-    /* ... your lighthouse configs */
+  /* ... your lighthouse configs */
 };
 
 await playAudit({
-    thresholds: thresholdsConfig,
-    opts: lighthouseOptions,
-    config: lighthouseConfig,
+  thresholds: thresholdsConfig,
+  opts: lighthouseOptions,
+  config: lighthouseConfig,
 
-    /* ... other configurations */
+  /* ... other configurations */
+});
+```
+
+You can pass default lighthouse configs like so:
+
+```js
+import lighthouseDesktopConfig from 'lighthouse/lighthouse-core/config/lr-desktop-config';
+
+await playAudit({
+  thresholds: thresholdsConfig,
+  opts: lighthouseOptions,
+  config: lighthouseDesktopConfig,
+
+  /* ... other configurations */
 });
 ```
 
@@ -131,41 +145,47 @@ Sometimes it's important to pass a parameter _disableStorageReset_ as false. You
 
 ```js
 const opts = {
-    disableStorageReset: false,
+  disableStorageReset: false,
 };
 
 await playAudit({
-    page,
-    port: 9222,
-    opts,
+  page,
+  port: 9222,
+  opts,
 });
 ```
 
-## Generating audit reports
+## Running lighthouse on authenticated routes
 
-`playwright-lighthouse` library can produce Lighthouse CSV, HTML and JSON audit reports, that you can host in your CI server. These reports can be useful for ongoing audits and monitoring from build to build.
+Playwright by default does not share any context (eg auth state) between pages. Lighthouse will open a new page and thus any previous authentication steps are void. To persist auth state you need to use a persistent context:
 
 ```js
-await playAudit({
-    /* ... other configurations */
+const os = require('os');
+const { playAudit } = require('playwright-lighthouse');
+const { chromium } = require('playwright');
 
-    reports: {
-        formats: {
-            json: true, //defaults to false
-            html: true, //defaults to false
-            csv: true, //defaults to false
-        },
-        name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
-        directory: `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
-    },
+describe('audit example', () => {
+  it('open browser', async () => {
+    const context = await chromium.launchPersistentContext(os.tmpdir(), {
+      args: ['--remote-debugging-port=9222'],
+    });
+    const page = await context.newPage();
+    await page.goto('http://localhost:3000/');
+
+    // Perform login steps here which will save to cookie or localStorage
+
+    // When lighthouse opens a new page the storage will be persisted meaning the new page will have the same user session
+    await playAudit({
+      page: page,
+      port: 9222,
+    });
+
+    await context.close();
+  });
 });
 ```
 
-Sample HTML report:
-
-![screen](./docs/lighthouse_report.png)
-
-## Usage with Playright Test Runner
+## Usage with Playwright Test Runner
 
 ```ts
 import { chromium } from 'playwright';
@@ -210,6 +230,114 @@ lighthouseTest.describe('Lighthouse', () => {
   });
 });
 ```
+
+### Running lighthouse on authenticated routes with the test runner
+
+```ts
+import os from 'os';
+import getPort from 'get-port';
+import { BrowserContext, chromium, Page } from 'playwright';
+import { test as base } from '@playwright/test';
+import { playAudit } from 'playwright-lighthouse';
+
+export const lighthouseTest = base.extend<
+  {
+    authenticatedPage: Page;
+    context: BrowserContext;
+  },
+  {
+    port: number;
+  }
+>({
+  // We need to assign a unique port for each lighthouse test to allow
+  // lighthouse tests to run in parallel
+  port: [
+    async ({}, use) => {
+      const port = await getPort();
+      await use(port);
+    },
+    { scope: 'worker' },
+  ],
+
+  // As lighthouse opens a new page, and as playwright does not by default allow
+  // shared contexts, we need to explicitly create a persistent context to
+  // allow lighthouse to run behind authenticated routes.
+  // @ts-ignore
+  context: [
+    async ({ port }, use) => {
+      const userDataDir = os.tmpdir();
+      const context = await chromium.launchPersistentContext(userDataDir, {
+        args: [`--remote-debugging-port=${port}`],
+      });
+      await use(context);
+      await context.close();
+    },
+    { scope: 'test' },
+  ],
+
+  authenticatedPage: [
+    async ({ context, page }, use) => {
+      // Mock any requests on the entire context
+      await context.route('https://example.com/token', (route) => {
+        return route.fulfill({
+          status: 200,
+          body: JSON.stringify({
+            // ...
+          }),
+          headers: {
+            // ...
+          },
+        });
+      });
+
+      await page.goto('http://localhost:3000');
+
+      // Setup your auth state by inserting cookies or localStorage values
+      await insertAuthState(page);
+
+      await use(page);
+    },
+    { scope: 'test' },
+  ],
+});
+
+lighthouseTest.describe('Authenticated route', () => {
+  lighthouseTest(
+    'should pass lighthouse tests',
+    async ({ port, authenticatedPage: page }) => {
+      await page.goto('http://localhost:3000/my-profile');
+      await playAudit({
+        page,
+        port,
+      });
+    }
+  );
+});
+```
+
+## Generating audit reports
+
+`playwright-lighthouse` library can produce Lighthouse CSV, HTML and JSON audit reports, that you can host in your CI server. These reports can be useful for ongoing audits and monitoring from build to build.
+
+```js
+await playAudit({
+  /* ... other configurations */
+
+  reports: {
+    formats: {
+      json: true, //defaults to false
+      html: true, //defaults to false
+      csv: true, //defaults to false
+    },
+    name: `name-of-the-report`, //defaults to `lighthouse-${new Date().getTime()}`
+    directory: `path/to/directory`, //defaults to `${process.cwd()}/lighthouse`
+  },
+});
+```
+
+Sample HTML report:
+
+![screen](./docs/lighthouse_report.png)
 
 ## Tell me your issues
 

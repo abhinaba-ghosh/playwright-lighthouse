@@ -28,13 +28,13 @@ const getReport = async (lhr, dir, name, type) => {
   if (validTypes.includes(type)) {
     const reportBody = ReportGenerator.generateReport(lhr, type);
     try {
-      await fs.mkdirSync(dir, {recursive: true });
+      await fs.mkdirSync(dir, { recursive: true });
       await fs.writeFileSync(`${dir}/${name}.${type}`, reportBody);
     } catch (err) {
       throw err;
     }
   } else {
-    console.log(`Invalid report type specified: ${type} Skipping Reports...)`)
+    console.log(`Invalid report type specified: ${type} Skipping Reports...)`);
   }
 };
 
@@ -65,10 +65,15 @@ exports.lighthouse = async ({
     {}
   );
 
-  for (var typeFromKey in reports['formats']){
+  for (var typeFromKey in reports['formats']) {
     var value = reports['formats'][typeFromKey];
     if (value) {
-      await getReport(results.lhr, reports['directory'], reports['name'], typeFromKey);
+      await getReport(
+        results.lhr,
+        reports['directory'],
+        reports['name'],
+        typeFromKey
+      );
     }
   }
 

@@ -8,12 +8,12 @@ describe('reports example', () => {
   before(async () => {
     reportDirectory = `${process.cwd()}/lighthouse`;
     reportFilename = 'reports-test';
-    reportFileTypes = ['html', 'json']
+    reportFileTypes = ['html', 'json'];
     reportFileTypes.forEach((type) => {
       var fileToDelete = `${reportDirectory}/${reportFilename}.${type}`;
       if (fs.existsSync(fileToDelete)) {
         fs.unlinkSync(fileToDelete);
-      };
+      }
     });
 
     browser = await playwright['chromium'].launch({
@@ -24,7 +24,7 @@ describe('reports example', () => {
   });
 
   after(async () => {
-    await browser.close()
+    await browser.close();
   });
 
   it('writes json and html reports', async () => {
@@ -36,23 +36,25 @@ describe('reports example', () => {
         formats: {
           json: true,
           html: true,
-          csv: false
+          csv: false,
         },
         name: reportFilename,
-        directory:  reportDirectory
+        directory: reportDirectory,
       },
       page: page,
       thresholds: {
-        performance: 50
+        performance: 50,
       },
       port: 9222,
     });
 
     reportFileTypes.forEach((type) => {
       reportFileTypes.forEach((type) => {
-        expect(fs.existsSync(`${reportDirectory}/${reportFilename}.${type}`), 
-          `${type} Report file does not exist.`).to.be.true;
+        expect(
+          fs.existsSync(`${reportDirectory}/${reportFilename}.${type}`),
+          `${type} Report file does not exist.`
+        ).to.be.true;
       });
-    });  
+    });
   });
 });

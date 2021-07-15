@@ -292,7 +292,7 @@ export const lighthouseTest = base.extend<
 
       await page.goto('http://localhost:3000');
 
-      // Setup your auth state but inserting cookies or localStorage values
+      // Setup your auth state by inserting cookies or localStorage values
       await insertAuthState(page);
 
       await use(page);

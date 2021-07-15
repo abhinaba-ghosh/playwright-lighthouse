@@ -4,7 +4,9 @@
     "description": "Playwright Lighthouse Audit",
     "main": "index.js",
     "scripts": {
-        "test": "mocha test --timeout 15000"
+        "test": "mocha test --timeout 15000",
+        "prettier": "prettier --check \"**/*.{js,md,yml}\"",
+        "prettier:fix": "prettier --write \"**/*.{js,md,yml}\""
     },
     "repository": {
         "type": "git",
@@ -22,7 +24,6 @@
     "license": "MIT",
     "dependencies": {
         "chalk": "^4.0.0",
-        "lighthouse": "^7.4.0",
         "ua-parser-js": "^0.7.21"
     },
     "devDependencies": {
@@ -30,10 +31,13 @@
         "@types/node": "14.0.1",
         "chai": "^4.2.0",
         "eslint": "7.0.0",
+        "lighthouse": "^7.4.0",
         "mocha": "7.1.2",
-        "playwright": "^1.1.1"
+        "playwright": "^1.1.1",
+        "prettier": "^2.3.2"
     },
     "peerDependencies": {
+        "lighthouse": ">7.4.0",
         "playwright": ">1.0.0"
     }
 }

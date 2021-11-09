@@ -1,6 +1,6 @@
 const fs = require('fs');
 const lighthouseLib = require('lighthouse');
-const ReportGenerator = require('lighthouse/lighthouse-core/report/report-generator');
+const ReportGenerator = require('lighthouse/report/generator/report-generator');
 
 const compare = (thresholds, newValue) => {
   const errors = [];

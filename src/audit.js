@@ -70,7 +70,7 @@ let playAudit = async function (auditConfig = {}) {
   });
 
   if (comparison.errors.length > 0) {
-    const formateErrors = `\n\n${errors.join('\n')}`;
+    const formateErrors = `\n\n${comparison.errors.join('\n')}`;
 
     const label =
     comparison.errors.length === 1

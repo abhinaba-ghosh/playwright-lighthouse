@@ -52,7 +52,7 @@ let playAudit = async function (auditConfig = {}) {
     ...auditConfig.reports,
   };
 
-  const { errors, results } = await lighthouse({
+  const { comparison, results } = await lighthouse({
     url: auditConfig.page.url(),
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
@@ -65,19 +65,21 @@ let playAudit = async function (auditConfig = {}) {
   log(chalk.blue('-------- playwright lighthouse audit reports --------'));
   log('\n');
 
-  results.forEach((res) => {
+  comparison.results.forEach((res) => {
     log(chalk.greenBright(res));
   });
 
-  if (errors.length > 0) {
+  if (comparison.errors.length > 0) {
     const formateErrors = `\n\n${errors.join('\n')}`;
 
     const label =
-      errors.length === 1
+    comparison.errors.length === 1
         ? `playwright lighthouse - A threshold is not matching the expectation.${formateErrors}`
         : `playwright lighthouse - Some thresholds are not matching the expectations.${formateErrors}`;
     throw new Error(label);
   }
+
+  return results;
 };
 
 const checkBrowserIsValid = (browserName) => {

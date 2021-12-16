@@ -339,6 +339,14 @@ Sample HTML report:
 
 ![screen](./docs/lighthouse_report.png)
 
+playAudit function also provides a promise that resolves with the Lighthouse result object containing the LHR (Lighthouse report in JSON format).
+
+```js
+const lighthouseReport = await playAudit({
+  /* ... configurations */
+}); // lightHouse report contains the report results
+```
+
 ## Tell me your issues
 
 you can raise any issue [here](https://github.com/abhinaba-ghosh/playwright-lighthouse/issues)

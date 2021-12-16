@@ -77,5 +77,6 @@ exports.lighthouse = async ({
     }
   }
 
-  return compare(thresholds, newValues);
+  const output = { comparison: compare(thresholds, newValues), results }
+  return output;
 };

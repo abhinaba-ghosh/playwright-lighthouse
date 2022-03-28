@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs/promises');
 const lighthouseLib = require('lighthouse');
 const ReportGenerator = require('lighthouse/report/generator/report-generator');
 
@@ -27,12 +27,8 @@ const getReport = async (lhr, dir, name, type) => {
 
   if (validTypes.includes(type)) {
     const reportBody = ReportGenerator.generateReport(lhr, type);
-    try {
-      await fs.mkdirSync(dir, { recursive: true });
-      await fs.writeFileSync(`${dir}/${name}.${type}`, reportBody);
-    } catch (err) {
-      throw err;
-    }
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(`${dir}/${name}.${type}`, reportBody);
   } else {
     console.log(`Invalid report type specified: ${type} Skipping Reports...)`);
   }
@@ -77,6 +73,6 @@ exports.lighthouse = async ({
     }
   }
 
-  const output = { comparison: compare(thresholds, newValues), results }
+  const output = { comparison: compare(thresholds, newValues), results };
   return output;
 };

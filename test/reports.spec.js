@@ -1,10 +1,12 @@
 const fs = require('fs');
 const { playAudit } = require('../index');
-const playwright = require('playwright');
+const playwright = require('playwright-core');
 const chai = require('chai');
 const expect = chai.expect;
 
 describe('reports example', () => {
+  let reportDirectory, reportFilename, reportFileTypes, browser, page;
+
   before(async () => {
     reportDirectory = `${process.cwd()}/lighthouse`;
     reportFilename = 'reports-test';
@@ -43,12 +45,12 @@ describe('reports example', () => {
       },
       page: page,
       thresholds: {
-        performance: 50,
+        performance: 30,
       },
       port: 9222,
     });
 
-    reportFileTypes.forEach((type) => {
+    reportFileTypes.forEach(() => {
       reportFileTypes.forEach((type) => {
         expect(
           fs.existsSync(`${reportDirectory}/${reportFilename}.${type}`),

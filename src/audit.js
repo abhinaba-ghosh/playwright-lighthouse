@@ -1,8 +1,4 @@
 const { lighthouse } = require('./task');
-const chalk = require('chalk');
-const uaParser = require('ua-parser-js');
-
-const log = console.log;
 
 const defaultThresholds = {
   performance: 100,
@@ -25,17 +21,28 @@ const defaultReports = {
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
 let playAudit = async function (auditConfig = {}) {
-  if (!auditConfig.port || !auditConfig.page) {
+  if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
-      `port/page is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
+      `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
     );
   }
 
-  const ua = await auditConfig.page.evaluate(() => navigator.userAgent);
-  const currentBrowserName = uaParser(ua).browser.name;
+  const log = auditConfig.disableLogs ? () => {} : console.log;
+  const chalk = auditConfig.disableLogs
+    ? new Proxy({}, { get: () => () => {} })
+    : require('chalk');
 
-  if (!checkBrowserIsValid(currentBrowserName)) {
-    throw new Error(`${currentBrowserName} is not supported. Skipping...`);
+  const url = auditConfig.url || auditConfig.page.url();
+  if (auditConfig.page) {
+    const uaParser = require('ua-parser-js');
+
+    // eslint-disable-next-line no-undef
+    const ua = await auditConfig.page.evaluate(() => navigator.userAgent);
+    const currentBrowserName = uaParser(ua).browser.name;
+
+    if (!checkBrowserIsValid(currentBrowserName)) {
+      throw new Error(`${currentBrowserName} is not supported. Skipping...`);
+    }
   }
 
   if (!auditConfig.thresholds) {
@@ -53,7 +60,7 @@ let playAudit = async function (auditConfig = {}) {
   };
 
   const { comparison, results } = await lighthouse({
-    url: auditConfig.page.url(),
+    url,
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
     config: auditConfig.config,
@@ -69,11 +76,11 @@ let playAudit = async function (auditConfig = {}) {
     log(chalk.greenBright(res));
   });
 
-  if (comparison.errors.length > 0) {
+  if (auditConfig.ignoreError !== true && comparison.errors.length > 0) {
     const formateErrors = `\n\n${comparison.errors.join('\n')}`;
 
     const label =
-    comparison.errors.length === 1
+      comparison.errors.length === 1
         ? `playwright lighthouse - A threshold is not matching the expectation.${formateErrors}`
         : `playwright lighthouse - Some thresholds are not matching the expectations.${formateErrors}`;
     throw new Error(label);

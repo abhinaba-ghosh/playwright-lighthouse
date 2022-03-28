@@ -21,9 +21,9 @@ const defaultReports = {
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
 let playAudit = async function (auditConfig = {}) {
-  if (!auditConfig.port || !auditConfig.page) {
+  if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
-      `port/page is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
+      `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
     );
   }
 
@@ -32,8 +32,8 @@ let playAudit = async function (auditConfig = {}) {
     ? new Proxy({}, { get: () => () => {} })
     : require('chalk');
 
-  let url = auditConfig.page;
-  if (typeof auditConfig.page !== 'string') {
+  const url = auditConfig.url || auditConfig.page.url();
+  if (auditConfig.page) {
     const uaParser = require('ua-parser-js');
 
     // eslint-disable-next-line no-undef
@@ -43,8 +43,6 @@ let playAudit = async function (auditConfig = {}) {
     if (!checkBrowserIsValid(currentBrowserName)) {
       throw new Error(`${currentBrowserName} is not supported. Skipping...`);
     }
-
-    url = auditConfig.page.url();
   }
 
   if (!auditConfig.thresholds) {

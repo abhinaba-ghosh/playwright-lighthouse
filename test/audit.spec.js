@@ -32,7 +32,7 @@ describe('audit example', () => {
 
   it('no logs, no page, no errors', async () => {
     await playAudit({
-      page: 'https://angular.io/',
+      url: 'https://angular.io/',
       thresholds: {
         performance: 100,
         accessibility: 100,

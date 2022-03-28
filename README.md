@@ -41,7 +41,7 @@ describe('audit example', () => {
     await page.goto('https://angular.io/');
 
     await playAudit({
-      page: page,
+      page: page, // or pass url as string directly
       port: 9222,
     });
 

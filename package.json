@@ -4,7 +4,7 @@
   "description": "Playwright Lighthouse Audit",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --parallel --timeout 20000",
+    "test": "mocha --parallel --timeout 30000",
     "lint": "eslint --ext .js --ignore-path .gitignore .",
     "prettier": "prettier --check \"**/*.{js,md,yml}\"",
     "prettier:fix": "prettier --write \"**/*.{js,md,yml}\""

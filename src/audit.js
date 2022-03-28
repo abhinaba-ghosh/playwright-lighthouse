@@ -1,8 +1,4 @@
 const { lighthouse } = require('./task');
-const chalk = require('chalk');
-const uaParser = require('ua-parser-js');
-
-const log = console.log;
 
 const defaultThresholds = {
   performance: 100,
@@ -31,12 +27,24 @@ let playAudit = async function (auditConfig = {}) {
     );
   }
 
-  // eslint-disable-next-line no-undef
-  const ua = await auditConfig.page.evaluate(() => navigator.userAgent);
-  const currentBrowserName = uaParser(ua).browser.name;
+  const log = auditConfig.disableLogs ? () => {} : console.log;
+  const chalk = auditConfig.disableLogs
+    ? new Proxy({}, { get: () => () => {} })
+    : require('chalk');
 
-  if (!checkBrowserIsValid(currentBrowserName)) {
-    throw new Error(`${currentBrowserName} is not supported. Skipping...`);
+  let url = auditConfig.page;
+  if (typeof auditConfig.page !== 'string') {
+    const uaParser = require('ua-parser-js');
+
+    // eslint-disable-next-line no-undef
+    const ua = await auditConfig.page.evaluate(() => navigator.userAgent);
+    const currentBrowserName = uaParser(ua).browser.name;
+
+    if (!checkBrowserIsValid(currentBrowserName)) {
+      throw new Error(`${currentBrowserName} is not supported. Skipping...`);
+    }
+
+    url = auditConfig.page.url();
   }
 
   if (!auditConfig.thresholds) {
@@ -54,7 +62,7 @@ let playAudit = async function (auditConfig = {}) {
   };
 
   const { comparison, results } = await lighthouse({
-    url: auditConfig.page.url(),
+    url,
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
     config: auditConfig.config,
@@ -70,7 +78,7 @@ let playAudit = async function (auditConfig = {}) {
     log(chalk.greenBright(res));
   });
 
-  if (comparison.errors.length > 0) {
+  if (auditConfig.ignoreError !== true && comparison.errors.length > 0) {
     const formateErrors = `\n\n${comparison.errors.join('\n')}`;
 
     const label =

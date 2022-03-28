@@ -1,7 +1,7 @@
 import { Page } from 'playwright-core';
 
 export interface playwrightLighthouseConfig {
-  page: Page;
+  page: Page | string;
   port: number;
   thresholds?: Record<string, number>;
   opts?: Record<string, any>;
@@ -13,6 +13,8 @@ export interface playwrightLighthouseConfig {
   };
   directory?: string;
   name?: string;
+  ignoreError?: boolean;
+  disableLogs?: boolean;
 }
 
 /**

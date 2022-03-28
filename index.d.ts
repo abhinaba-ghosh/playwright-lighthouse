@@ -8,12 +8,14 @@ export interface playwrightLighthouseConfig {
   opts?: Record<string, any>;
   config?: Record<string, any>;
   reports?: {
-    html?: boolean;
-    json?: boolean;
-    csv?: boolean;
+    formats?: {
+      html?: boolean;
+      json?: boolean;
+      csv?: boolean;
+    };
+    directory?: string;
+    name?: string;
   };
-  directory?: string;
-  name?: string;
   ignoreError?: boolean;
   disableLogs?: boolean;
 }

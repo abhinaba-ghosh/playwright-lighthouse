@@ -1,7 +1,9 @@
 const { playAudit } = require('../index');
-const playwright = require('playwright');
+const playwright = require('playwright-core');
 
 describe('audit example', () => {
+  let browser, page;
+
   before(async () => {
     browser = await playwright['chromium'].launch({
       args: ['--remote-debugging-port=9223'],

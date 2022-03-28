@@ -1,12 +1,16 @@
-import { Page } from 'playwright';
+import { Page } from 'playwright-core';
 
 export interface playwrightLighthouseConfig {
   page: Page;
   port: number;
-  thresholds?: any;
-  opts?: any;
-  config?: any;
-  reports?: {};
+  thresholds?: Record<string, number>;
+  opts?: Record<string, any>;
+  config?: Record<string, any>;
+  reports?: {
+    html?: boolean;
+    json?: boolean;
+    csv?: boolean;
+  };
   directory?: string;
   name?: string;
 }

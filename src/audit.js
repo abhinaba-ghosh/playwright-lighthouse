@@ -31,6 +31,7 @@ let playAudit = async function (auditConfig = {}) {
     );
   }
 
+  // eslint-disable-next-line no-undef
   const ua = await auditConfig.page.evaluate(() => navigator.userAgent);
   const currentBrowserName = uaParser(ua).browser.name;
 
@@ -73,7 +74,7 @@ let playAudit = async function (auditConfig = {}) {
     const formateErrors = `\n\n${comparison.errors.join('\n')}`;
 
     const label =
-    comparison.errors.length === 1
+      comparison.errors.length === 1
         ? `playwright lighthouse - A threshold is not matching the expectation.${formateErrors}`
         : `playwright lighthouse - Some thresholds are not matching the expectations.${formateErrors}`;
     throw new Error(label);

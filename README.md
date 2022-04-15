@@ -207,7 +207,6 @@ export const lighthouseTest = base.extend<
     { scope: 'worker' },
   ],
 
-  // @ts-ignore
   browser: [
     async ({ port }, use) => {
       const browser = await chromium.launch({
@@ -262,7 +261,6 @@ export const lighthouseTest = base.extend<
   // As lighthouse opens a new page, and as playwright does not by default allow
   // shared contexts, we need to explicitly create a persistent context to
   // allow lighthouse to run behind authenticated routes.
-  // @ts-ignore
   context: [
     async ({ port }, use) => {
       const userDataDir = os.tmpdir();

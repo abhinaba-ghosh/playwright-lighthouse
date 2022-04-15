@@ -321,50 +321,56 @@ In case you have a [`globalSetup`](https://playwright.dev/docs/test-auth) script
 Additionally, you may pass `url` instead of `page` to speedup execution and save resources.
 
 ```ts
-import os from 'os'
-import path from 'path'
-import { chromium, test as base } from '@playwright/test'
-import type { BrowserContext } from '@playwright/test'
-import getPort from 'get-port' // version ^5.1.1 due to issues with imports in playwright 1.20.1
+import os from 'os';
+import path from 'path';
+import { chromium, test as base } from '@playwright/test';
+import type { BrowserContext } from '@playwright/test';
+import getPort from 'get-port'; // version ^5.1.1 due to issues with imports in playwright 1.20.1
 
-export const lighthouseTest = base.extend<{ context: BrowserContext }, { port: number }>({
-    port: [
-        async ({}, use) => {
-            // Assign a unique port for each playwright worker to support parallel tests
-            const port = await getPort()
-            await use(port)
-        },
-        { scope: 'worker' },
-    ],
+export const lighthouseTest = base.extend<
+  { context: BrowserContext },
+  { port: number }
+>({
+  port: [
+    async ({}, use) => {
+      // Assign a unique port for each playwright worker to support parallel tests
+      const port = await getPort();
+      await use(port);
+    },
+    { scope: 'worker' },
+  ],
 
-    context: [
-        async ({ port, launchOptions }, use) => {
-            const context = await chromium.launchPersistentContext(path.join(os.tmpdir(), 'pw', `${Math.random()}`.replace('.', '')), {
-                args: [...(launchOptions.args || []), `--remote-debugging-port=${port}`],
-            })
+  context: [
+    async ({ port, launchOptions }, use) => {
+      const context = await chromium.launchPersistentContext(
+        path.join(os.tmpdir(), 'pw', `${Math.random()}`.replace('.', '')),
+        {
+          args: [
+            ...(launchOptions.args || []),
+            `--remote-debugging-port=${port}`,
+          ],
+        }
+      );
 
-            // apply state previously saved in the the `globalSetup`
-            await context.addCookies(require('../../state-chrome.json').cookies)
+      // apply state previously saved in the the `globalSetup`
+      await context.addCookies(require('../../state-chrome.json').cookies);
 
-            await use(context)
-            await context.close()
-        },
-        { scope: 'test' },
-    ],
-})
+      await use(context);
+      await context.close();
+    },
+    { scope: 'test' },
+  ],
+});
 
 lighthouseTest.describe('Authenticated route after globalSetup', () => {
-  lighthouseTest(
-    'should pass lighthouse tests',
-    async ({ port }) => {
-      // it's possible to pass url directly instead of a page
-      // to avoid opening a page an extra time and keeping it opened
-      await playAudit({
-        url: 'http://localhost:3000/my-profile',
-        port,
-      });
-    }
-  );
+  lighthouseTest('should pass lighthouse tests', async ({ port }) => {
+    // it's possible to pass url directly instead of a page
+    // to avoid opening a page an extra time and keeping it opened
+    await playAudit({
+      url: 'http://localhost:3000/my-profile',
+      port,
+    });
+  });
 });
 ```
 

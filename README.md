@@ -166,7 +166,8 @@ const { chromium } = require('playwright');
 
 describe('audit example', () => {
   it('open browser', async () => {
-    const context = await chromium.launchPersistentContext(os.tmpdir(), {
+    const userDataDir = path.join(os.tmpdir(), 'pw', String(Math.random()));
+    const context = await chromium.launchPersistentContext(userDataDir, {
       args: ['--remote-debugging-port=9222'],
     });
     const page = await context.newPage();
@@ -183,6 +184,23 @@ describe('audit example', () => {
     await context.close();
   });
 });
+```
+
+Clean up the tmp directories on playwright teardown:
+
+```ts
+import rimraf from 'rimraf';
+import os from 'os';
+import path from 'path';
+
+function globalSetup() {
+  return () => {
+    const tmpDirPath = path.join(os.tmpdir(), 'pw');
+    rimraf(tmpDirPath, console.log);
+  };
+}
+
+export default globalSetup;
 ```
 
 ## Usage with Playwright Test Runner
@@ -263,7 +281,7 @@ export const lighthouseTest = base.extend<
   // allow lighthouse to run behind authenticated routes.
   context: [
     async ({ port }, use) => {
-      const userDataDir = os.tmpdir();
+      const userDataDir = path.join(os.tmpdir(), 'pw', String(Math.random()));
       const context = await chromium.launchPersistentContext(userDataDir, {
         args: [`--remote-debugging-port=${port}`],
       });
@@ -340,15 +358,13 @@ export const lighthouseTest = base.extend<
 
   context: [
     async ({ port, launchOptions }, use) => {
-      const context = await chromium.launchPersistentContext(
-        path.join(os.tmpdir(), 'pw', `${Math.random()}`.replace('.', '')),
-        {
-          args: [
-            ...(launchOptions.args || []),
-            `--remote-debugging-port=${port}`,
-          ],
-        }
-      );
+      const userDataDir = path.join(os.tmpdir(), 'pw', String(Math.random()));
+      const context = await chromium.launchPersistentContext(userDataDir, {
+        args: [
+          ...(launchOptions.args || []),
+          `--remote-debugging-port=${port}`,
+        ],
+      });
 
       // apply state previously saved in the the `globalSetup`
       await context.addCookies(require('../../state-chrome.json').cookies);

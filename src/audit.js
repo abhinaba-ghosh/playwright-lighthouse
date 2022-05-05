@@ -76,14 +76,19 @@ let playAudit = async function (auditConfig = {}) {
     log(chalk.greenBright(res));
   });
 
-  if (auditConfig.ignoreError !== true && comparison.errors.length > 0) {
+  if (comparison.errors.length > 0) {
     const formateErrors = `\n\n${comparison.errors.join('\n')}`;
 
     const label =
       comparison.errors.length === 1
         ? `playwright lighthouse - A threshold is not matching the expectation.${formateErrors}`
         : `playwright lighthouse - Some thresholds are not matching the expectations.${formateErrors}`;
-    throw new Error(label);
+
+    if (auditConfig.ignoreError !== true) {
+      throw new Error(label);
+    } else {
+      results.comparisonError = label;
+    }
   }
 
   return results;

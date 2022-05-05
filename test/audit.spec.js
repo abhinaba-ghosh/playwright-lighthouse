@@ -1,5 +1,7 @@
 const { playAudit } = require('../index');
 const playwright = require('playwright-core');
+const chai = require('chai');
+const expect = chai.expect;
 
 describe('audit example', () => {
   let browser, page;
@@ -31,7 +33,7 @@ describe('audit example', () => {
   });
 
   it('no logs, no page, no errors', async () => {
-    await playAudit({
+    const result = await playAudit({
       url: 'https://angular.io/',
       thresholds: {
         performance: 100,
@@ -44,5 +46,6 @@ describe('audit example', () => {
       ignoreError: true,
       disableLogs: true,
     });
+    expect(typeof result.comparisonError).to.equal('string');
   });
 });

@@ -1,58 +1,32 @@
-const fs = require('fs/promises');
-const lighthouseLib = require('lighthouse');
-const ReportGenerator = require('lighthouse/report/generator/report-generator');
-
-const compare = (thresholds, newValue) => {
-  const errors = [];
-  const results = [];
-
-  Object.keys(thresholds).forEach((key) => {
-    if (thresholds[key] > newValue[key]) {
-      errors.push(
-        `${key} record is ${newValue[key]} and is under the ${thresholds[key]} threshold`
-      );
-    } else {
-      results.push(
-        `${key} record is ${newValue[key]} and desired threshold was ${thresholds[key]}`
-      );
-    }
-  });
-
-  return { errors, results };
-};
-
-const getReport = async (lhr, dir, name, type) => {
-  const validTypes = ['csv', 'html', 'json'];
-  name = name.substr(0, name.lastIndexOf('.')) || name;
-
-  if (validTypes.includes(type)) {
-    const reportBody = ReportGenerator.generateReport(lhr, type);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(`${dir}/${name}.${type}`, reportBody);
-  } else {
-    console.log(`Invalid report type specified: ${type} Skipping Reports...)`);
-  }
-};
+const lighthouseLib = require('lighthouse/lighthouse-core/fraggle-rock/api.js');
+const { compare, getReport } = require('./util')
 
 exports.lighthouse = async ({
   url,
+  page,
   thresholds,
   opts = {},
   config,
-  reports,
-  cdpPort,
+  reports
 }) => {
-  opts.port = cdpPort;
-
   if (!opts.onlyCategories) {
     opts.onlyCategories = Object.keys(thresholds);
   }
 
-  const results = await lighthouseLib(
+  const lighthouseOpts = {
+    page,
+    config: config,
+    configContext: { disableStorageReset: true, ...opts },
+  }
+  const results = await lighthouseLib.navigation(
     url,
-    { disableStorageReset: true, ...opts },
-    config
-  );
+    lighthouseOpts
+  )
+  // const results = await lighthouseLib(
+  //   url,
+  //   { disableStorageReset: true, ...opts },
+  //   config
+  // );
   const newValues = Object.keys(results.lhr.categories).reduce(
     (acc, curr) => ({
       ...acc,

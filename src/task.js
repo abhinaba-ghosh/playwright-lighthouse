@@ -18,15 +18,12 @@ exports.lighthouse = async ({
     config: config,
     configContext: { disableStorageReset: true, ...opts },
   }
+
   const results = await lighthouseLib.navigation(
     url,
     lighthouseOpts
   )
-  // const results = await lighthouseLib(
-  //   url,
-  //   { disableStorageReset: true, ...opts },
-  //   config
-  // );
+
   const newValues = Object.keys(results.lhr.categories).reduce(
     (acc, curr) => ({
       ...acc,

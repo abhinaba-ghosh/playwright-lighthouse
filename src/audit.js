@@ -1,5 +1,10 @@
 const { lighthouse } = require('./task');
-const { patchPageObject, checkBrowserIsValid, defaultReports, defaultThresholds } = require('./util')
+const {
+  patchPageObject,
+  checkBrowserIsValid,
+  defaultReports,
+  defaultThresholds,
+} = require('./util');
 
 const playAudit = async function (auditConfig = {}) {
   if (!auditConfig.page && !auditConfig.url) {
@@ -48,7 +53,7 @@ const playAudit = async function (auditConfig = {}) {
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
     config: auditConfig.config,
-    reports: reportsConfig
+    reports: reportsConfig,
   });
 
   log('\n');

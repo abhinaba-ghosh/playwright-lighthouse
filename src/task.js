@@ -1,5 +1,5 @@
 const lighthouseLib = require('lighthouse/lighthouse-core/fraggle-rock/api.js');
-const { compare, getReport } = require('./util')
+const { compare, getReport } = require('./util');
 
 exports.lighthouse = async ({
   url,
@@ -7,7 +7,7 @@ exports.lighthouse = async ({
   thresholds,
   opts = {},
   config,
-  reports
+  reports,
 }) => {
   if (!opts.onlyCategories) {
     opts.onlyCategories = Object.keys(thresholds);
@@ -17,12 +17,9 @@ exports.lighthouse = async ({
     page,
     config: config,
     configContext: { disableStorageReset: true, ...opts },
-  }
+  };
 
-  const results = await lighthouseLib.navigation(
-    url,
-    lighthouseOpts
-  )
+  const results = await lighthouseLib.navigation(url, lighthouseOpts);
 
   const newValues = Object.keys(results.lhr.categories).reduce(
     (acc, curr) => ({

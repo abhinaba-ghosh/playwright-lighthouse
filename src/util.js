@@ -29,10 +29,10 @@ const patchPageObject = (page) => {
         const session = await page.context().newCDPSession(page);
         session.connection = () => new events.EventEmitter();
         return session;
-      }
-    }
-  }
-}
+      },
+    };
+  };
+};
 
 const checkBrowserIsValid = (browserName) => {
   const matches = VALID_BROWSERS.filter((pattern) => {
@@ -83,5 +83,5 @@ module.exports = {
   patchPageObject,
   checkBrowserIsValid,
   compare,
-  getReport
-}
+  getReport,
+};

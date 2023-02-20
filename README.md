@@ -26,7 +26,7 @@ $ npm install --save-dev playwright-lighthouse playwright lighthouse
 
 After completion of the Installation, you can use `playwright-lighthouse` in your code to audit the current page.
 
-In your test code you need to import `playwright-lighthouse` and assign a `port` for the lighthouse scan. You can choose any non-allocated port.
+In your test code you need to import `playwright-lighthouse` and pass the `page` for the lighthouse scan. The tests will be executed in the very same `page` passed to `playAudit`.
 
 ```js
 const { playAudit } = require('playwright-lighthouse');
@@ -34,15 +34,12 @@ const playwright = require('playwright');
 
 describe('audit example', () => {
   it('open browser', async () => {
-    const browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9222'],
-    });
+    const browser = await playwright['chromium'].launch();
     const page = await browser.newPage();
-    await page.goto('https://angular.io/');
+    await page.goto('https://www.github.com');
 
     await playAudit({
       page: page,
-      port: 9222,
     });
 
     await browser.close();
@@ -62,11 +59,9 @@ const playwright = require('playwright');
 
 describe('audit example', () => {
   it('open browser', async () => {
-    const browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9222'],
-    });
+    const browser = await playwright['chromium'].launch();
     const page = await browser.newPage();
-    await page.goto('https://angular.io/');
+    await page.goto('https://www.github.com');
 
     await playAudit({
       page: page,
@@ -77,7 +72,6 @@ describe('audit example', () => {
         seo: 50,
         pwa: 50,
       },
-      port: 9222,
     });
 
     await browser.close();
@@ -94,8 +88,7 @@ await playAudit({
   page: page,
   thresholds: {
     performance: 85,
-  },
-  port: 9222,
+  }
 });
 ```
 
@@ -150,14 +143,48 @@ const opts = {
 
 await playAudit({
   page,
-  port: 9222,
   opts,
 });
 ```
 
 ## Running lighthouse on authenticated routes
 
-Playwright by default does not share any context (eg auth state) between pages. Lighthouse will open a new page and thus any previous authentication steps are void. To persist auth state you need to use a persistent context:
+Since `playAudit` utilises the `page` object of playwright for its tests, we can utilise the same authenticated `page` for lighthouse tests. Consequently we can also perform lighthouse tests on device clouds such as Browserstack using the playwright connect method.
+
+### Running lighthouse with device clouds and authenticated pages
+```js
+const { playAudit } = require('playwright-lighthouse');
+const playwright = require('playwright');
+import { test, expect } from '@playwright/test';
+
+describe('audit example', () => {
+  it('open browser', async () => {
+    const browser = await playwright['chromium'].connect(`wss://cdp.browserstack.com/...`);
+    const page = await browser.newPage({
+      ignoreHTTPSErrors: true,
+      httpCredentials: { username: "admin", password: "admin" }
+    });
+    await page.goto('https://the-internet.herokuapp.com/basic_auth');
+
+    await playAudit({
+      page: page,
+      thresholds: {
+        performance: 50,
+        accessibility: 50,
+        'best-practices': 50,
+        seo: 50,
+        pwa: 50,
+      },
+    });
+
+    await browser.close();
+  });
+});
+```
+
+### Running lighthouse with persistent context
+
+Playwright by default does not share any context (eg auth state) between pages. To persist auth state you need to use a persistent context:
 
 ```js
 const os = require('os');
@@ -167,9 +194,7 @@ const { chromium } = require('playwright');
 describe('audit example', () => {
   it('open browser', async () => {
     const userDataDir = path.join(os.tmpdir(), 'pw', String(Math.random()));
-    const context = await chromium.launchPersistentContext(userDataDir, {
-      args: ['--remote-debugging-port=9222'],
-    });
+    const context = await chromium.launchPersistentContext(userDataDir);
     const page = await context.newPage();
     await page.goto('http://localhost:3000/');
 
@@ -178,7 +203,6 @@ describe('audit example', () => {
     // When lighthouse opens a new page the storage will be persisted meaning the new page will have the same user session
     await playAudit({
       page: page,
-      port: 9222,
     });
 
     await context.close();
@@ -210,26 +234,14 @@ import { chromium } from 'playwright';
 import type { Browser } from 'playwright';
 import { playAudit } from 'playwright-lighthouse';
 import { test as base } from '@playwright/test';
-import getPort from 'get-port';
 
 export const lighthouseTest = base.extend<
   {},
-  { port: number; browser: Browser }
+  { browser: Browser }
 >({
-  port: [
-    async ({}, use) => {
-      // Assign a unique port for each playwright worker to support parallel tests
-      const port = await getPort();
-      await use(port);
-    },
-    { scope: 'worker' },
-  ],
-
   browser: [
-    async ({ port }, use) => {
-      const browser = await chromium.launch({
-        args: [`--remote-debugging-port=${port}`],
-      });
+    async ({ }, use) => {
+      const browser = await chromium.launch();
       await use(browser);
     },
     { scope: 'worker' },
@@ -237,22 +249,20 @@ export const lighthouseTest = base.extend<
 });
 
 lighthouseTest.describe('Lighthouse', () => {
-  lighthouseTest('should pass lighthouse tests', async ({ page, port }) => {
+  lighthouseTest('should pass lighthouse tests', async ({ page }) => {
     await page.goto('http://example.com');
     await page.waitForSelector('#some-element');
     await playAudit({
       page,
-      port,
     });
   });
 });
 ```
 
-### Running lighthouse on authenticated routes with the test runner
+### Running lighthouse on authenticated routes with the test runner and persistent context
 
 ```ts
 import os from 'os';
-import getPort from 'get-port';
 import { BrowserContext, chromium, Page } from 'playwright';
 import { test as base } from '@playwright/test';
 import { playAudit } from 'playwright-lighthouse';
@@ -262,29 +272,15 @@ export const lighthouseTest = base.extend<
     authenticatedPage: Page;
     context: BrowserContext;
   },
-  {
-    port: number;
-  }
+  {}
 >({
-  // We need to assign a unique port for each lighthouse test to allow
-  // lighthouse tests to run in parallel
-  port: [
-    async ({}, use) => {
-      const port = await getPort();
-      await use(port);
-    },
-    { scope: 'worker' },
-  ],
-
   // As lighthouse opens a new page, and as playwright does not by default allow
   // shared contexts, we need to explicitly create a persistent context to
   // allow lighthouse to run behind authenticated routes.
   context: [
-    async ({ port }, use) => {
+    async ({}, use) => {
       const userDataDir = path.join(os.tmpdir(), 'pw', String(Math.random()));
-      const context = await chromium.launchPersistentContext(userDataDir, {
-        args: [`--remote-debugging-port=${port}`],
-      });
+      const context = await chromium.launchPersistentContext(userDataDir);
       await use(context);
       await context.close();
     },
@@ -320,11 +316,10 @@ export const lighthouseTest = base.extend<
 lighthouseTest.describe('Authenticated route', () => {
   lighthouseTest(
     'should pass lighthouse tests',
-    async ({ port, authenticatedPage: page }) => {
+    async ({ authenticatedPage: page }) => {
       await page.goto('http://localhost:3000/my-profile');
       await playAudit({
         page,
-        port,
       });
     }
   );
@@ -341,28 +336,17 @@ import os from 'os';
 import path from 'path';
 import { chromium, test as base } from '@playwright/test';
 import type { BrowserContext } from '@playwright/test';
-import getPort from 'get-port'; // version ^5.1.1 due to issues with imports in playwright 1.20.1
+import { playAudit } from 'playwright-lighthouse';
 
 export const lighthouseTest = base.extend<
-  { context: BrowserContext },
-  { port: number }
+  { context: BrowserContext }
 >({
-  port: [
-    async ({}, use) => {
-      // Assign a unique port for each playwright worker to support parallel tests
-      const port = await getPort();
-      await use(port);
-    },
-    { scope: 'worker' },
-  ],
-
   context: [
-    async ({ port, launchOptions }, use) => {
+    async ({ launchOptions }, use) => {
       const userDataDir = path.join(os.tmpdir(), 'pw', String(Math.random()));
       const context = await chromium.launchPersistentContext(userDataDir, {
         args: [
           ...(launchOptions.args || []),
-          `--remote-debugging-port=${port}`,
         ],
       });
 
@@ -377,12 +361,13 @@ export const lighthouseTest = base.extend<
 });
 
 lighthouseTest.describe('Authenticated route after globalSetup', () => {
-  lighthouseTest('should pass lighthouse tests', async ({ port }) => {
-    // it's possible to pass url directly instead of a page
-    // to avoid opening a page an extra time and keeping it opened
+  lighthouseTest('should pass lighthouse tests', async ({ context }) => {
+    // We need to pass in page object to playAudt
+    // We can create a new page from the context and pass it to playAudit specifically for lighthouse tests
+    const page = await context.newPage();
     await playAudit({
       url: 'http://localhost:3000/my-profile',
-      port,
+      page: page
     });
   });
 });

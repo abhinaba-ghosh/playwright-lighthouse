@@ -1,30 +1,15 @@
 const { lighthouse } = require('./task');
+const {
+  patchPageObject,
+  checkBrowserIsValid,
+  defaultReports,
+  defaultThresholds,
+  NO_PAGE_ERROR,
+} = require('./util');
 
-const defaultThresholds = {
-  performance: 100,
-  accessibility: 100,
-  'best-practices': 100,
-  seo: 100,
-  pwa: 100,
-};
-
-const defaultReports = {
-  formats: {
-    csv: false,
-    html: false,
-    json: false,
-  },
-  name: `lighthouse-${new Date().getTime()}`,
-  directory: `${process.cwd()}/lighthouse`,
-};
-
-const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
-
-let playAudit = async function (auditConfig = {}) {
-  if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
-    throw new Error(
-      `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
-    );
+const playAudit = async function (auditConfig = {}) {
+  if (!auditConfig.page) {
+    throw new Error(NO_PAGE_ERROR);
   }
 
   const log = auditConfig.disableLogs ? () => {} : console.log;
@@ -59,13 +44,15 @@ let playAudit = async function (auditConfig = {}) {
     ...auditConfig.reports,
   };
 
+  patchPageObject(auditConfig.page);
+
   const { comparison, results } = await lighthouse({
     url,
+    page: auditConfig.page,
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,
     config: auditConfig.config,
     reports: reportsConfig,
-    cdpPort: auditConfig.port,
   });
 
   log('\n');
@@ -92,17 +79,6 @@ let playAudit = async function (auditConfig = {}) {
   }
 
   return results;
-};
-
-const checkBrowserIsValid = (browserName) => {
-  const matches = VALID_BROWSERS.filter((pattern) => {
-    return new RegExp(pattern).test(browserName);
-  });
-
-  if (matches.length > 0) {
-    return true;
-  }
-  return false;
 };
 
 exports.playAudit = playAudit;

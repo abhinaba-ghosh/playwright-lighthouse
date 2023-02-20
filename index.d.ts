@@ -1,9 +1,8 @@
 import { Page } from 'playwright-core';
 
 export interface playwrightLighthouseConfig {
-  page?: Page;
+  page: Page;
   url?: string;
-  port: number;
   thresholds?: Record<string, number>;
   opts?: Record<string, any>;
   config?: Record<string, any>;
@@ -37,8 +36,7 @@ export interface playwrightLighthouseConfig {
  *                  'best-practices': 50,
  *                  seo: 50,
  *                  pwa: 50,
- *               },
- *              port: 9222
+ *               }
  *      });
  * });
  *

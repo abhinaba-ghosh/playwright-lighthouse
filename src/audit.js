@@ -4,13 +4,12 @@ const {
   checkBrowserIsValid,
   defaultReports,
   defaultThresholds,
+  NO_PAGE_ERROR,
 } = require('./util');
 
 const playAudit = async function (auditConfig = {}) {
-  if (!auditConfig.page && !auditConfig.url) {
-    throw new Error(
-      `page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
-    );
+  if (!auditConfig.page) {
+    throw new Error(NO_PAGE_ERROR);
   }
 
   const log = auditConfig.disableLogs ? () => {} : console.log;

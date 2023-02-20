@@ -18,11 +18,9 @@ describe('reports example', () => {
       }
     });
 
-    browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9222'],
-    });
+    browser = await playwright['chromium'].launch();
     page = await browser.newPage();
-    await page.goto('https://angular.io/');
+    await page.goto('https://www.google.com/');
   });
 
   after(async () => {
@@ -47,7 +45,6 @@ describe('reports example', () => {
       thresholds: {
         performance: 30,
       },
-      port: 9222,
     });
 
     reportFileTypes.forEach(() => {

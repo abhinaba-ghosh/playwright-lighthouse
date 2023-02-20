@@ -2,6 +2,7 @@ const events = require('events');
 const ReportGenerator = require('lighthouse/report/generator/report-generator');
 const fs = require('fs/promises');
 
+const NO_PAGE_ERROR = `page not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `;
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
 const defaultThresholds = {
@@ -80,6 +81,7 @@ const getReport = async (lhr, dir, name, type) => {
 module.exports = {
   defaultReports,
   defaultThresholds,
+  NO_PAGE_ERROR,
   patchPageObject,
   checkBrowserIsValid,
   compare,

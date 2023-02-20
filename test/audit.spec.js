@@ -1,17 +1,14 @@
 const { playAudit } = require('../index');
 const playwright = require('playwright-core');
-const chai = require('chai');
-const expect = chai.expect;
+const { expect } = require('chai');
 
 describe('audit example', () => {
   let browser, page;
 
   before(async () => {
-    browser = await playwright['chromium'].launch({
-      args: ['--remote-debugging-port=9223'],
-    });
+    browser = await playwright['chromium'].launch();
     page = await browser.newPage();
-    await page.goto('https://angular.io/');
+    await page.goto('https://www.google.com/');
   });
 
   after(async () => {
@@ -28,13 +25,13 @@ describe('audit example', () => {
         seo: 50,
         pwa: 50,
       },
-      port: 9223,
     });
   });
 
   it('no logs, no page, no errors', async () => {
     const result = await playAudit({
-      url: 'https://angular.io/',
+      url: 'https://www.google.com/',
+      page: page,
       thresholds: {
         performance: 100,
         accessibility: 100,
@@ -42,7 +39,6 @@ describe('audit example', () => {
         seo: 100,
         pwa: 100,
       },
-      port: 9223,
       ignoreError: true,
       disableLogs: true,
     });

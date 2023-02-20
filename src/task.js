@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import lighthouseLib from 'lighthouse';
-import ReportGenerator from 'lighthouse/report/generator/report-generator.js';
+import { ReportGenerator } from 'lighthouse/report/generator/report-generator.js';
 
 const compare = (thresholds, newValue) => {
   const errors = [];

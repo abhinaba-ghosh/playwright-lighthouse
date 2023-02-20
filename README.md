@@ -29,8 +29,8 @@ After completion of the Installation, you can use `playwright-lighthouse` in you
 In your test code you need to import `playwright-lighthouse` and assign a `port` for the lighthouse scan. You can choose any non-allocated port.
 
 ```js
-const { playAudit } = require('playwright-lighthouse');
-const playwright = require('playwright');
+import { playAudit } from 'playwright-lighthouse'
+import playwright from 'playwright'
 
 describe('audit example', () => {
   it('open browser', async () => {
@@ -57,8 +57,8 @@ If you don't provide any threshold argument to the `playAudit` command, the test
 You can make assumptions on the different metrics by passing an object as argument to the `playAudit` command:
 
 ```javascript
-const { playAudit } = require('playwright-lighthouse');
-const playwright = require('playwright');
+import { playAudit } from 'playwright-lighthouse'
+import playwright from 'playwright'
 
 describe('audit example', () => {
   it('open browser', async () => {
@@ -160,9 +160,9 @@ await playAudit({
 Playwright by default does not share any context (eg auth state) between pages. Lighthouse will open a new page and thus any previous authentication steps are void. To persist auth state you need to use a persistent context:
 
 ```js
-const os = require('os');
-const { playAudit } = require('playwright-lighthouse');
-const { chromium } = require('playwright');
+import os from 'os'
+import { playAudit } from 'playwright-lighthouse'
+import { chromium } from 'playwright'
 
 describe('audit example', () => {
   it('open browser', async () => {

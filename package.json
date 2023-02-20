@@ -3,6 +3,7 @@
   "version": "2.2.2",
   "description": "Playwright Lighthouse Audit",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "mocha --parallel --timeout 30000",
     "lint": "eslint --ext .js --ignore-path .gitignore .",

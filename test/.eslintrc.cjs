@@ -1,5 +1,5 @@
 module.exports = {
-  extends: '../.eslintrc.js',
+  extends: '../.eslintrc.cjs',
   env: {
     mocha: true,
   },

@@ -2,6 +2,8 @@ const fs = require('fs/promises');
 const lighthouseLib = require('lighthouse');
 const ReportGenerator = require('lighthouse/report/generator/report-generator');
 
+const BSTACK_EXECUTION_FAILED = "Failed to execute Lighthouse on Browserstack";
+
 const compare = (thresholds, newValue) => {
   const errors = [];
   const results = [];
@@ -55,10 +57,13 @@ exports.lighthouse = async ({
       action: 'lighthouse',
       arguments: { url: url, lhFlags: opts, lhConfig: config },
     };
-    const data = await page.evaluate((_) => {},
+    const response = await page.evaluate((_) => {},
     `browserstack_executor: ${JSON.stringify(BSTACK_PARAMS)}`);
-    console.log(data)
-    results = JSON.parse(data);
+    const { lhSuccess, data } = JSON.parse(response);
+    if(lhSuccess == 'false') {
+      throw new Error(BSTACK_EXECUTION_FAILED + ': ' + JSON.stringify(data));
+    }
+    results = data;
   } else {
     ({ lhr: results } = await lighthouseLib(
       url,

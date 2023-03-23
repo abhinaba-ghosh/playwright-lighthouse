@@ -21,6 +21,12 @@ const defaultReports = {
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
 let playAudit = async function (auditConfig = {}) {
+  if (process.env.LH_BROWSERSTACK == 'true' && !auditConfig.page) {
+    throw new Error(
+      `Please pass in the page object for a Browserstack run.`
+    );
+  }
+
   if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
       `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
@@ -60,6 +66,7 @@ let playAudit = async function (auditConfig = {}) {
   };
 
   const { comparison, results } = await lighthouse({
+    page: auditConfig.page,
     url,
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,

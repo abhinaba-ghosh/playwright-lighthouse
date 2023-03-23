@@ -35,6 +35,7 @@ const getReport = async (lhr, dir, name, type) => {
 };
 
 exports.lighthouse = async ({
+  page,
   url,
   thresholds,
   opts = {},
@@ -48,15 +49,28 @@ exports.lighthouse = async ({
     opts.onlyCategories = Object.keys(thresholds);
   }
 
-  const results = await lighthouseLib(
-    url,
-    { disableStorageReset: true, ...opts },
-    config
-  );
-  const newValues = Object.keys(results.lhr.categories).reduce(
+  let results;
+  if (process.env.LH_BROWSERSTACK == 'true') {
+    const BSTACK_PARAMS = {
+      action: 'lighthouse',
+      arguments: { url: url, lhFlags: opts, lhConfig: config },
+    };
+    const data = await page.evaluate((_) => {},
+    `browserstack_executor: ${JSON.stringify(BSTACK_PARAMS)}`);
+    console.log(data)
+    results = JSON.parse(data);
+  } else {
+    ({ lhr: results } = await lighthouseLib(
+      url,
+      { disableStorageReset: true, ...opts },
+      config
+    ));
+  }
+
+  const newValues = Object.keys(results.categories).reduce(
     (acc, curr) => ({
       ...acc,
-      [curr]: results.lhr.categories[curr].score * 100,
+      [curr]: results.categories[curr].score * 100,
     }),
     {}
   );
@@ -65,7 +79,7 @@ exports.lighthouse = async ({
     var value = reports['formats'][typeFromKey];
     if (value) {
       await getReport(
-        results.lhr,
+        results,
         reports['directory'],
         reports['name'],
         typeFromKey

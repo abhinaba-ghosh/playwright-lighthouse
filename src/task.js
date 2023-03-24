@@ -53,18 +53,22 @@ exports.lighthouse = async ({
 
   let results;
   if (process.env.LH_BROWSERSTACK == 'true') {
-    console.log(`Starting Lighthouse run on Browserstack for url: ${url}`);
+    console.log(`Starting Lighthouse run on Browserstack for url => ${url}`);
     const BSTACK_PARAMS = {
       action: 'lighthouse',
       arguments: { url: url, lhFlags: opts, lhConfig: config },
     };
     const response = await page.evaluate((_) => {},
     `browserstack_executor: ${JSON.stringify(BSTACK_PARAMS)}`);
-    const { lhSuccess, data } = JSON.parse(response);
-    if (lhSuccess == 'false') {
-      throw new Error(BSTACK_EXECUTION_FAILED + ': ' + JSON.stringify(data));
+    try {
+      const { lhSuccess, data } = JSON.parse(response);
+      results = data;
+      if (lhSuccess == 'false') throw 'lhRun failed';
+    } catch (error) {
+      throw new Error(
+        BSTACK_EXECUTION_FAILED + ': ' + response
+      );
     }
-    results = data;
   } else {
     ({ lhr: results } = await lighthouseLib(
       url,

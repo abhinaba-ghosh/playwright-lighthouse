@@ -25,9 +25,7 @@ let playAudit = async function (auditConfig = {}) {
     throw new Error(
       `Please pass in the page object for a Browserstack run.`
     );
-  }
-
-  if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
+  } else if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
       `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
     );

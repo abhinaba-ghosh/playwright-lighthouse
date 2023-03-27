@@ -1,7 +1,7 @@
-const fs = require('fs');
-const { playAudit } = require('../index');
-const playwright = require('playwright-core');
-const chai = require('chai');
+import fs from 'fs';
+import { playAudit } from '../index.js';
+import playwright from 'playwright-core';
+import chai from 'chai';
 const expect = chai.expect;
 
 describe('reports example', () => {

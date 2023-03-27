@@ -1,2 +1,1 @@
-const { playAudit } = require('./src/audit');
-module.exports = { playAudit };
+export { playAudit } from './src/audit.js';

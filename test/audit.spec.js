@@ -1,6 +1,6 @@
-const { playAudit } = require('../index');
-const playwright = require('playwright-core');
-const chai = require('chai');
+import { playAudit } from '../index.js';
+import playwright from 'playwright-core';
+import chai from 'chai';
 const expect = chai.expect;
 
 describe('audit example', () => {

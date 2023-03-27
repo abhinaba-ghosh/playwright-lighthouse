@@ -1,6 +1,6 @@
-const fs = require('fs/promises');
-const lighthouseLib = require('lighthouse');
-const ReportGenerator = require('lighthouse/report/generator/report-generator');
+import fs from 'fs/promises';
+import lighthouseLib from 'lighthouse';
+import { ReportGenerator } from 'lighthouse/report/generator/report-generator.js';
 
 const compare = (thresholds, newValue) => {
   const errors = [];
@@ -34,7 +34,7 @@ const getReport = async (lhr, dir, name, type) => {
   }
 };
 
-exports.lighthouse = async ({
+export const lighthouse = async ({
   url,
   thresholds,
   opts = {},

@@ -1,4 +1,4 @@
-const { lighthouse } = require('./task');
+import { lighthouse } from './task.js';
 
 const defaultThresholds = {
   performance: 100,
@@ -20,7 +20,7 @@ const defaultReports = {
 
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
-let playAudit = async function (auditConfig = {}) {
+export const playAudit = async function (auditConfig = {}) {
   if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
       `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
@@ -30,11 +30,11 @@ let playAudit = async function (auditConfig = {}) {
   const log = auditConfig.disableLogs ? () => {} : console.log;
   const chalk = auditConfig.disableLogs
     ? new Proxy({}, { get: () => () => {} })
-    : require('chalk');
+    : await import('chalk').then((m) => m.default);
 
   const url = auditConfig.url || auditConfig.page.url();
   if (auditConfig.page) {
-    const uaParser = require('ua-parser-js');
+    const { default: uaParser } = await import('ua-parser-js');
 
     // eslint-disable-next-line no-undef
     const ua = await auditConfig.page.evaluate(() => navigator.userAgent);
@@ -104,5 +104,3 @@ const checkBrowserIsValid = (browserName) => {
   }
   return false;
 };
-
-exports.playAudit = playAudit;

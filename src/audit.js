@@ -33,7 +33,7 @@ export const playAudit = async function (auditConfig = {}) {
     : await import('chalk').then((m) => m.default);
 
   const url = auditConfig.url || auditConfig.page.url();
-  if (auditConfig.page) {
+  if (auditConfig.page && !auditConfig.ignoreBrowserName) {
     const { default: uaParser } = await import('ua-parser-js');
 
     // eslint-disable-next-line no-undef

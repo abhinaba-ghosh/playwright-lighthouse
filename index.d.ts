@@ -18,6 +18,7 @@ export interface playwrightLighthouseConfig {
   };
   ignoreError?: boolean;
   disableLogs?: boolean;
+  ignoreBrowserName?: boolean;
 }
 
 /**

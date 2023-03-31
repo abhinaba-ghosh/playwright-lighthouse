@@ -48,4 +48,19 @@ describe('audit example', () => {
     });
     expect(typeof result.comparisonError).to.equal('string');
   });
+
+  it('ignore browserName', async () => {
+    await playAudit({
+      page: page,
+      ignoreBrowserName: true,
+      thresholds: {
+        performance: 30,
+        accessibility: 50,
+        'best-practices': 50,
+        seo: 50,
+        pwa: 50,
+      },
+      port: 9223,
+    });
+  });
 });

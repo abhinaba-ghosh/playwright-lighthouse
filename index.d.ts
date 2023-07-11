@@ -1,12 +1,19 @@
 import { Page } from 'playwright-core';
+import { Flags, Config } from 'lighthouse/types/lh';
 
 export interface playwrightLighthouseConfig {
   page?: Page;
   url?: string;
   port: number;
-  thresholds?: Record<string, number>;
-  opts?: Record<string, any>;
-  config?: Record<string, any>;
+  thresholds?: {
+    performance: number;
+    accessibility: number;
+    'best-practices': number;
+    seo: number;
+    pwa: number;
+  };
+  opts?: Flags;
+  config?: Config;
   reports?: {
     formats?: {
       html?: boolean;

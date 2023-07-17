@@ -6,11 +6,11 @@ export interface playwrightLighthouseConfig {
   url?: string;
   port: number;
   thresholds?: {
-    performance: number;
-    accessibility: number;
-    'best-practices': number;
-    seo: number;
-    pwa: number;
+    performance?: number;
+    accessibility?: number;
+    'best-practices'?: number;
+    seo?: number;
+    pwa?: number;
   };
   opts?: Flags;
   config?: Config;

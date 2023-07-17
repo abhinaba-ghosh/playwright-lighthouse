@@ -1,5 +1,5 @@
 import { Page } from 'playwright-core';
-import { Flags, Config } from 'lighthouse/types/lh';
+import { Flags, Config } from 'lighthouse';
 
 export interface playwrightLighthouseConfig {
   page?: Page;

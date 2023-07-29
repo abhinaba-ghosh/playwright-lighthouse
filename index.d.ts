@@ -22,7 +22,7 @@ export interface playwrightLighthouseConfig {
   ignoreBrowserName?: boolean;
 }
 
-export type playwrightLighthouseResult = RunnerResult & {
+export interface playwrightLighthouseResult extends RunnerResult {
   comparison?: string;
 }
 

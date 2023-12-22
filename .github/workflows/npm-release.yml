@@ -1,0 +1,35 @@
+name: npm Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionType:
+        description: 'Version type (major, minor, patch)'
+        required: true
+        default: 'patch'
+    branches: 
+      - master
+
+jobs:
+  npm-release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Bump version and publish to npm
+        run: |
+          npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s"
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

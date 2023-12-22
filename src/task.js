@@ -1,7 +1,6 @@
 import fs from 'fs/promises';
 import lighthouseLib from 'lighthouse';
 import { ReportGenerator } from 'lighthouse/report/generator/report-generator.js';
-import { version } from '../package.json' assert { type: "json" };;
 
 const compare = (thresholds, newValue) => {
   const errors = [];
@@ -36,6 +35,7 @@ const getReport = async (lhr, dir, name, type) => {
 };
 
 export const lighthouse = async ({
+  page,
   url,
   thresholds,
   opts = {},
@@ -49,7 +49,7 @@ export const lighthouse = async ({
     opts.onlyCategories = Object.keys(thresholds);
   }
 
-  let results;
+  let results = {};
 
   // Execution on LambdaTest
   if (process.env.LIGHTHOUSE_LAMBDATEST === 'true') {
@@ -61,7 +61,7 @@ export const lighthouse = async ({
         url,
         lighthouseOptions: opts,
         lighthouseConfig: config,
-        source: `playwright-lighthouse ${version}`
+        source: 'playwright-lighthouse'
        },
     };
 
@@ -69,7 +69,7 @@ export const lighthouse = async ({
 
     try {
       const { error, data } = JSON.parse(ltResponse);
-      results = data;
+      results.lhr = JSON.parse(data);
       if (error) throw lambdatestExecutionError;
     } catch (error) {
       throw new Error(`${lambdatestExecutionError}: ${ltResponse}`);

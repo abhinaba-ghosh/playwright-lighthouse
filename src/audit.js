@@ -21,10 +21,12 @@ const defaultReports = {
 const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
 
 export const playAudit = async function (auditConfig = {}) {
-  if (process.env.LIGHTHOUSE_LAMBDATEST == 'true' && !auditConfig.page) {
-    throw new Error(
-      `Please pass the page object to generate lighthouse report on LambdaTest.`
-    );
+  if (process.env.LIGHTHOUSE_LAMBDATEST === 'true') {
+    if (!auditConfig.page) {
+      throw new Error(
+        `Please pass the page object to generate lighthouse report on LambdaTest.`
+      );
+    }
   } else if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
       `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
@@ -64,6 +66,7 @@ export const playAudit = async function (auditConfig = {}) {
   };
 
   const { comparison, results } = await lighthouse({
+    page: auditConfig.page,
     url,
     thresholds: auditConfig.thresholds || defaultThresholds,
     opts: auditConfig.opts,

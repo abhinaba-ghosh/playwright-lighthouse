@@ -53,7 +53,8 @@ export const lighthouse = async ({
 
   // Execution on LambdaTest
   if (process.env.LIGHTHOUSE_LAMBDATEST === 'true') {
-    const lambdatestExecutionError = 'Failed to generate Lighthouse report on LambdaTest'
+    const lambdatestExecutionError =
+      'Failed to generate Lighthouse report on LambdaTest';
     console.log('Generating Lighthouse report on LambdaTest for url:: ', url);
     const LAMBDATEST_ARGUMENTS = {
       action: 'lighthouseReport',
@@ -61,11 +62,12 @@ export const lighthouse = async ({
         url,
         lighthouseOptions: opts,
         lighthouseConfig: config,
-        source: 'playwright-lighthouse'
-       },
+        source: 'playwright-lighthouse',
+      },
     };
 
-    const ltResponse = await page.evaluate(_ => {}, `lambdatest_action: ${JSON.stringify(LAMBDATEST_ARGUMENTS)}`)
+    const ltResponse = await page.evaluate(() => {},
+    `lambdatest_action: ${JSON.stringify(LAMBDATEST_ARGUMENTS)}`);
 
     try {
       const { error, data } = JSON.parse(ltResponse);

@@ -2,3 +2,5 @@ node_modules
 lighthouse
 .DS_Store
 .idea
+package-lock.json
+

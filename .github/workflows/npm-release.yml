@@ -32,12 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run Tests
-        run: npx playwright install --with-deps chromium
-        run: npm run lint
-        run: npm test
-
-      
+      - name: Run Tests and Lint
+        run: |
+          npx playwright install --with-deps chromium
+          npm run lint
+          npm test
+ 
       - name: Bump version
         run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s" --no-git-tag-version
 

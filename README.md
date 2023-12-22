@@ -420,6 +420,96 @@ const lighthouseReport = await playAudit({
 }); // lightHouse report contains the report results
 ```
 
+## Generating Lighthouse reports on LambdaTest
+You can execute Lighthouse reports on LambdaTest platform while executing Playwright tests with the following steps. You can generate multiple lighthouse reports in a single test.
+
+#### Install playwright-lighthouse library
+```sh
+npm install playwright-lighthouse
+```
+
+#### Export the LIGTHHOUSE_LAMBDATEST environment variable to your project environment
+```sh
+export LIGHTHOUSE_LAMBDATEST='true'
+```
+
+#### Sample script
+```js
+import { chromium } from "playwright";
+import { playAudit } from "playwright-lighthouse";
+
+(async () => {
+  let browser, page;
+  try {
+    const capabilities = {
+      browserName: "Chrome",
+      browserVersion: "latest",
+      "LT:Options": {
+        platform: "Windows 11",
+        build: "Web Performance testing",
+        name: "Lighthouse test",
+        user: process.env.LT_USERNAME,
+        accessKey: process.env.LT_ACCESS_KEY,
+        network: true,
+        video: true,
+        console: true,
+      },
+    };
+
+    browser = await chromium.connect({
+      wsEndpoint: `wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`
+    });
+
+    page = await browser.newPage();
+
+    await page.goto("https://duckduckgo.com");
+    let element = await page.locator('[name="q"]');
+    await element.click();
+    await element.type("Playwright");
+    await element.press("Enter");
+
+    try {
+      await playAudit({
+        url: "https://duckduckgo.com",
+        page: page,
+        thresholds: {
+          performance: 50,
+          accessibility: 50,
+          "best-practices": 50,
+          seo: 50,
+          pwa: 10,
+        },
+        reports: {
+          formats: {
+            json: true,
+            html: true,
+            csv: true,
+          },
+        },
+      });
+
+      await page.evaluate((_) => {},
+      `lambdatest_action: ${JSON.stringify({ action: "setTestStatus", arguments: { status: "passed", remark: "Web performance metrics are are above the thresholds." } })}`);
+    } catch (e) {
+      await page.evaluate((_) => {},
+      `lambdatest_action: ${JSON.stringify({ action: "setTestStatus", arguments: { status: "failed", remark: e.stack } })}`);
+      console.error(e);
+    }
+  } catch (e) {
+    await page.evaluate((_) => {},
+    `lambdatest_action: ${JSON.stringify({ action: "setTestStatus", arguments: { status: "failed", remark: e.stack } })}`);
+  } finally {
+    await page.close();
+    await browser.close();
+  }
+})();
+```
+
+#### Viewing test results
+You can view your tests on [LambdaTest Web Automation dashboard](https://automation.lambdatest.com).
+
+![Lighthouse report on LambdaTest](./docs/LambdaTest_Playwright_LighthouseReport.png)
+
 ## Tell me your issues
 
 you can raise any issue [here](https://github.com/abhinaba-ghosh/playwright-lighthouse/issues)

@@ -453,7 +453,6 @@ import { playAudit } from "playwright-lighthouse";
         network: true,
         video: true,
         console: true,
-        cdpLogs: true,
       },
     };
 

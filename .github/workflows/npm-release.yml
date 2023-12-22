@@ -32,9 +32,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Bump version and publish to npm
-        run: |
-          npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s"
-          npm publish
+      - name: Run Tests
+        run: npx playwright install --with-deps chromium
+        run: npm run lint
+        run: npm test
+
+      
+      - name: Bump version
+        run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s" --no-git-tag-version
+
+      - name: Publish to npm
+        run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import lighthouseLib from 'lighthouse';
 import { ReportGenerator } from 'lighthouse/report/generator/report-generator.js';
+import { version } from '../package.json';
 
 const compare = (thresholds, newValue) => {
   const errors = [];
@@ -48,11 +49,39 @@ export const lighthouse = async ({
     opts.onlyCategories = Object.keys(thresholds);
   }
 
-  const results = await lighthouseLib(
-    url,
-    { disableStorageReset: true, ...opts },
-    config
-  );
+  let results;
+
+  // Execution on LambdaTest
+  if (process.env.LIGHTHOUSE_LAMBDATEST === 'true') {
+    const lambdatestExecutionError = 'Failed to generate Lighthouse report on LambdaTest'
+    console.log('Generating Lighthouse report on LambdaTest for url:: ', url);
+    const LAMBDATEST_ARGUMENTS = {
+      action: 'lighthouseReport',
+      arguments: {
+        url,
+        lighthouseOptions: opts,
+        lighthouseConfig: config,
+        source: `playwright-lighthouse ${version}`
+       },
+    };
+
+    const ltResponse = await page.evaluate(_ => {}, `lambdatest_action: ${JSON.stringify(LAMBDATEST_ARGUMENTS)}`)
+
+    try {
+      const { error, data } = JSON.parse(ltResponse);
+      results = data;
+      if (error) throw lambdatestExecutionError;
+    } catch (error) {
+      throw new Error(`${lambdatestExecutionError}: ${ltResponse}`);
+    }
+  } else {
+    results = await lighthouseLib(
+      url,
+      { disableStorageReset: true, ...opts },
+      config
+    );
+  }
+
   const newValues = Object.keys(results.lhr.categories).reduce(
     (acc, curr) => ({
       ...acc,

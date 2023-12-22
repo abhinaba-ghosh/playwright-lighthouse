@@ -3,7 +3,6 @@
   "version": "3.0.0",
   "description": "Playwright Lighthouse Audit",
   "main": "index.js",
-  "module": "index.cjs.js",
   "type": "module",
   "scripts": {
     "test": "mocha --parallel --timeout 30000",

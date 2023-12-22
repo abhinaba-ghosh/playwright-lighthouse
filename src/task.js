@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import lighthouseLib from 'lighthouse';
 import { ReportGenerator } from 'lighthouse/report/generator/report-generator.js';
-import { version } from '../package.json';
+import { version } from '../package.json' assert { type: "json" };;
 
 const compare = (thresholds, newValue) => {
   const errors = [];

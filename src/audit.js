@@ -18,7 +18,7 @@ const defaultReports = {
   directory: `${process.cwd()}/lighthouse`,
 };
 
-const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary'];
+const VALID_BROWSERS = ['Chrome', 'Chromium', 'Canary', 'Edge', 'Opera'];
 
 export const playAudit = async function (auditConfig = {}) {
   if (process.env.LIGHTHOUSE_LAMBDATEST === 'true') {

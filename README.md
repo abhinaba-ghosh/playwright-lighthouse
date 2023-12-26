@@ -442,7 +442,7 @@ import { playAudit } from "playwright-lighthouse";
   let browser, page;
   try {
     const capabilities = {
-      browserName: "Chrome",
+      browserName: "Chrome", // Browsers allowed: `Chrome`, `MicrosoftEdge` and `pw-chromium`
       browserVersion: "latest",
       "LT:Options": {
         platform: "Windows 11",

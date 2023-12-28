@@ -1,4 +1,5 @@
 import { Page } from 'playwright-core';
+import { RunnerResult } from 'lighthouse';
 
 export interface playwrightLighthouseConfig {
   page?: Page;
@@ -19,6 +20,10 @@ export interface playwrightLighthouseConfig {
   ignoreError?: boolean;
   disableLogs?: boolean;
   ignoreBrowserName?: boolean;
+}
+
+export interface playwrightLighthouseResult extends RunnerResult {
+  comparison?: string;
 }
 
 /**
@@ -46,4 +51,4 @@ export interface playwrightLighthouseConfig {
  */
 export function playAudit(
   playwrightLHConfiguration: playwrightLighthouseConfig
-): Promise<any>;
+): Promise<playwrightLighthouseResult>;

@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Ensures tags are fetched
 
       - name: Configure Git
         run: |
@@ -28,14 +30,17 @@ jobs:
 
       - name: Run Tests and Lint
         run: |
-          npx playwright install --with-deps chromium
           npm run lint
           npm test
 
+      - name: Determine Next Version
+        id: next-version
+        run: |
+          echo "NEXT_VERSION=$(npx semantic-release --no-ci --dry-run | grep 'The next release version is' | cut -d ' ' -f 6)" >> $GITHUB_ENV
+
       - name: Bump version and create git tag
-        run: npm version $(npx semantic-release --no-ci --dry-run | grep "The next release version is" | cut -d " " -f 6) -m "chore(release): %s [skip ci]"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm version ${{ env.NEXT_VERSION }} -m "chore(release): %s [skip ci]"
 
       - name: Publish to npm
         run: npm publish
@@ -45,5 +50,6 @@ jobs:
       - name: Commit and push changes
         run: |
           git add package.json package-lock.json
-          git commit -m "chore(release): bump package version [skip ci]"
+          git commit -m "chore(release): bump package version to ${{ env.NEXT_VERSION }} [skip ci]"
           git push
+

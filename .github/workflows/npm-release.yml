@@ -1,0 +1,53 @@
+name: NPM Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionType:
+        description: 'Version type (major, minor, patch)'
+        required: true
+        default: 'patch'
+    branches: 
+      - master
+
+jobs:
+  npm-release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Configure Git
+        run: |
+          git config --global user.name "abhinaba-ghosh"
+          git config --global user.email "abhinabaghosh.official@gmail.com"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Tests and Lint
+        run: |
+          npx playwright install --with-deps chromium
+          npm run lint
+          npm test
+ 
+      - name: Bump version
+        run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s" --no-git-tag-version
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Commit changes
+        run: |
+          git add package.json package-lock.json
+          git commit -m "chore: bump package version"
+          git push

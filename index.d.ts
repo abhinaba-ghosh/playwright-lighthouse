@@ -1,5 +1,5 @@
-import { Page } from 'playwright-core';
-import { Flags, Config } from 'lighthouse';
+import type { Page } from 'playwright-core';
+import type { Flags, Config, RunnerResult } from 'lighthouse';
 
 export interface playwrightLighthouseConfig {
   page?: Page;
@@ -28,6 +28,10 @@ export interface playwrightLighthouseConfig {
   ignoreBrowserName?: boolean;
 }
 
+export interface playwrightLighthouseResult extends RunnerResult {
+  comparison?: string;
+}
+
 /**
  * @description
  * Performs lighthouse audit based on the testcafe lighthouse configuration
@@ -53,4 +57,4 @@ export interface playwrightLighthouseConfig {
  */
 export function playAudit(
   playwrightLHConfiguration: playwrightLighthouseConfig
-): Promise<any>;
+): Promise<playwrightLighthouseResult>;

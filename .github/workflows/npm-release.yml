@@ -1,27 +1,21 @@
 name: NPM Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      versionType:
-        description: 'Version type (major, minor, patch)'
-        required: true
-        default: 'patch'
-    branches: 
+  push:
+    branches:
       - master
 
 jobs:
   npm-release:
-    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
+
       - name: Configure Git
         run: |
-          git config --global user.name "abhinaba-ghosh"
-          git config --global user.email "abhinabaghosh.official@gmail.com"
+          git config --global user.name "${{ secrets.GIT_USER_NAME }}"
+          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -37,17 +31,19 @@ jobs:
           npx playwright install --with-deps chromium
           npm run lint
           npm test
- 
-      - name: Bump version
-        run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s" --no-git-tag-version
+
+      - name: Bump version and create git tag
+        run: npm version $(npx semantic-release --no-ci --dry-run | grep "The next release version is" | cut -d " " -f 6) -m "chore(release): %s [skip ci]"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
-      - name: Commit changes
+
+      - name: Commit and push changes
         run: |
           git add package.json package-lock.json
-          git commit -m "chore: bump package version"
+          git commit -m "chore(release): bump package version [skip ci]"
           git push

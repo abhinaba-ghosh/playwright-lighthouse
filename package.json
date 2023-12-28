@@ -37,7 +37,14 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "mocha": "9.2.2",
-    "playwright-core": "1.19.2",
     "prettier": "^2.6.1"
-  }
+  },
+  "peerDependencies": {
+		"playwright-core": "^1.19.2"
+	},
+	"peerDependenciesMeta": {
+		"playwright-core": {
+			"optional": true
+		}
+	}
 }

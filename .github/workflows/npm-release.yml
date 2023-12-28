@@ -41,20 +41,19 @@ jobs:
           npm test
  
       - name: Bump version
-        run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s" --no-git-tag-version
-
+        run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s"
+      
       - name: Publish to npm
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      
-      - name: Commit changes
+
+      - name: Push changes and tags
         run: |
           git config user.name "${{ secrets.GIT_USER_NAME }}"
           git config user.email "${{ secrets.GIT_USER_EMAIL }}"
-          git add package.json package-lock.json
-          git commit -m "chore: bump package version"
           git push
+          git push --tags
       
       - name: Identify merged PRs
         id: merged-prs

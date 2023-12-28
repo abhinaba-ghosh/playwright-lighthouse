@@ -1,19 +1,25 @@
 name: NPM Release
 
 on:
-  push:
-    branches:
+  workflow_dispatch:
+    inputs:
+      versionType:
+        description: 'Version type (major, minor, patch)'
+        required: true
+        default: 'patch'
+    branches: 
       - master
 
 jobs:
   npm-release:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Ensures tags are fetched
-
+          fetch-depth: 0 # fetch all history so that we can determine the version bump
+      
       - name: Configure Git
         run: |
           git config --global user.name "${{ secrets.GIT_USER_NAME }}"
@@ -30,27 +36,41 @@ jobs:
 
       - name: Run Tests and Lint
         run: |
-          npm run lint
           npx playwright install --with-deps chromium
+          npm run lint
           npm test
-
-      - name: Determine Next Version
-        id: next-version
-        run: |
-          echo "NEXT_VERSION=$(npx semantic-release --no-ci --dry-run | grep 'The next release version is' | cut -d ' ' -f 6)" >> $GITHUB_ENV
-
-      - name: Bump version and create git tag
-        run: |
-          npm version ${{ env.NEXT_VERSION }} -m "chore(release): %s [skip ci]"
+ 
+      - name: Bump version
+        run: npm version ${{ github.event.inputs.versionType }} -m "Upgrade to %s" --no-git-tag-version
 
       - name: Publish to npm
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Commit and push changes
+      
+      - name: Commit changes
         run: |
           git add package.json package-lock.json
-          git commit -m "chore(release): bump package version to ${{ env.NEXT_VERSION }} [skip ci]"
+          git commit -m "chore: bump package version"
           git push
+      
+      - name: Identify merged PRs
+        id: merged-prs
+        run: |
+          PR_LIST=$(git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD | grep -oP 'Merge pull request #\K\d+')
+          echo "PR_LIST=$PR_LIST" >> $GITHUB_ENV
 
+      - name: Comment on PRs
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const prList = process.env.PR_LIST.split(' ')
+            for (const pr of prList) {
+              github.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr,
+                body: `:tada: This PR is included in version ${process.env.NEXT_VERSION} which was published to npm.`
+              })
+            }

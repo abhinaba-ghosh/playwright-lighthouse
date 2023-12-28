@@ -31,6 +31,7 @@ jobs:
       - name: Run Tests and Lint
         run: |
           npm run lint
+          npx playwright install --with-deps chromium
           npm test
 
       - name: Determine Next Version

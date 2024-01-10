@@ -54,24 +54,3 @@ jobs:
           git config user.email "${{ secrets.GIT_USER_EMAIL }}"
           git push
           git push --tags
-      
-      - name: Identify merged PRs
-        id: merged-prs
-        run: |
-          PR_LIST=$(git log --pretty=format:"%s" $(git describe --tags --abbrev=0)..HEAD | grep -oP 'Merge pull request #\K\d+')
-          echo "PR_LIST=$PR_LIST" >> $GITHUB_ENV
-
-      - name: Comment on PRs
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            const prList = process.env.PR_LIST.split(' ')
-            for (const pr of prList) {
-              github.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pr,
-                body: `:tada: This PR is included in version ${process.env.NEXT_VERSION} which was published to npm.`
-              })
-            }

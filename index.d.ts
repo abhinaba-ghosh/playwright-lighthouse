@@ -30,6 +30,7 @@ export interface playwrightLighthouseConfig {
 
 export interface playwrightLighthouseResult extends RunnerResult {
   comparison?: string;
+  comparisonError?: string;
 }
 
 /**

@@ -326,7 +326,7 @@ lighthouseTest.describe('Authenticated route', () => {
         page,
         port,
       });
-    },
+    }
   );
 });
 ```
@@ -494,19 +494,19 @@ import { playAudit } from 'playwright-lighthouse';
 
       await page.evaluate(
         (_) => {},
-        `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'passed', remark: 'Web performance metrics are are above the thresholds.' } })}`,
+        `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'passed', remark: 'Web performance metrics are are above the thresholds.' } })}`
       );
     } catch (e) {
       await page.evaluate(
         (_) => {},
-        `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`,
+        `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`
       );
       console.error(e);
     }
   } catch (e) {
     await page.evaluate(
       (_) => {},
-      `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`,
+      `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`
     );
   } finally {
     await page.close();

@@ -9,11 +9,11 @@ const compare = (thresholds, newValue) => {
   Object.keys(thresholds).forEach((key) => {
     if (thresholds[key] > newValue[key]) {
       errors.push(
-        `${key} record is ${newValue[key]} and is under the ${thresholds[key]} threshold`,
+        `${key} record is ${newValue[key]} and is under the ${thresholds[key]} threshold`
       );
     } else {
       results.push(
-        `${key} record is ${newValue[key]} and desired threshold was ${thresholds[key]}`,
+        `${key} record is ${newValue[key]} and desired threshold was ${thresholds[key]}`
       );
     }
   });
@@ -68,7 +68,7 @@ export const lighthouse = async ({
 
     const ltResponse = await page.evaluate(
       () => {},
-      `lambdatest_action: ${JSON.stringify(LAMBDATEST_ARGUMENTS)}`,
+      `lambdatest_action: ${JSON.stringify(LAMBDATEST_ARGUMENTS)}`
     );
 
     try {
@@ -82,7 +82,7 @@ export const lighthouse = async ({
     results = await lighthouseLib(
       url,
       { disableStorageReset: true, ...opts },
-      config,
+      config
     );
   }
 
@@ -91,7 +91,7 @@ export const lighthouse = async ({
       ...acc,
       [curr]: results.lhr.categories[curr].score * 100,
     }),
-    {},
+    {}
   );
 
   for (var typeFromKey in reports['formats']) {
@@ -101,7 +101,7 @@ export const lighthouse = async ({
         results.lhr,
         reports['directory'],
         reports['name'],
-        typeFromKey,
+        typeFromKey
       );
     }
   }

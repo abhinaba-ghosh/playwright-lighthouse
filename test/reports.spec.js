@@ -54,7 +54,7 @@ describe('reports example', () => {
       reportFileTypes.forEach((type) => {
         expect(
           fs.existsSync(`${reportDirectory}/${reportFilename}.${type}`),
-          `${type} Report file does not exist.`
+          `${type} Report file does not exist.`,
         ).to.be.true;
       });
     });

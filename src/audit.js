@@ -24,12 +24,12 @@ export const playAudit = async function (auditConfig = {}) {
   if (process.env.LIGHTHOUSE_LAMBDATEST === 'true') {
     if (!auditConfig.page) {
       throw new Error(
-        `Please pass the page object to generate lighthouse report on LambdaTest.`
+        `Please pass the page object to generate lighthouse report on LambdaTest.`,
       );
     }
   } else if (!auditConfig.port || (!auditConfig.page && !auditConfig.url)) {
     throw new Error(
-      `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `
+      `port, page or url is not set in playwright lighthouse config. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set it by yourself :). `,
     );
   }
 
@@ -55,8 +55,8 @@ export const playAudit = async function (auditConfig = {}) {
     log(
       chalk.yellow.italic(
         'playwright-lighthouse-audit',
-        'It looks like you have not set thresholds yet. The test will be based on the 100 score for every metrics. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set thresholds by yourself :).'
-      )
+        'It looks like you have not set thresholds yet. The test will be based on the 100 score for every metrics. Refer to https://github.com/abhinaba-ghosh/playwright-lighthouse to have more information and set thresholds by yourself :).',
+      ),
     );
   }
 

@@ -15,7 +15,7 @@
     "url": "https://github.com/abhinaba-ghosh/playwright-lighthouse"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": ">=16.x"
   },
   "keywords": [
     "playwright",

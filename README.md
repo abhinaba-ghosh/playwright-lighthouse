@@ -12,6 +12,12 @@ The purpose of this package is to produce web audit report for several pages in 
 
 ## Usage
 
+| `playwright-lighthouse` Version | Compatible Lighthouse Version |
+|---------------------------------|--------------------------------|
+| v3.x.x                          | 10                             |
+| v4.x.x                          | 11                             |
+
+
 ### Installation
 
 Add the `playwright-lighthouse`, `playwright` & `lighthouse` libraries to your project:

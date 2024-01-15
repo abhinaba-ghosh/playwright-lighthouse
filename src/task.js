@@ -66,8 +66,11 @@ export const lighthouse = async ({
       },
     };
 
-    const ltResponse = await page.evaluate(() => {},
-    `lambdatest_action: ${JSON.stringify(LAMBDATEST_ARGUMENTS)}`);
+    const lambdaAction = `lambdatest_action: ${JSON.stringify(
+      LAMBDATEST_ARGUMENTS
+    )}`;
+
+    const ltResponse = await page.evaluate(() => {}, lambdaAction);
 
     try {
       const { error, data } = JSON.parse(ltResponse);

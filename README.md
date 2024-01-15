@@ -29,8 +29,8 @@ After completion of the Installation, you can use `playwright-lighthouse` in you
 In your test code you need to import `playwright-lighthouse` and assign a `port` for the lighthouse scan. You can choose any non-allocated port.
 
 ```js
-import { playAudit } from 'playwright-lighthouse'
-import playwright from 'playwright'
+import { playAudit } from 'playwright-lighthouse';
+import playwright from 'playwright';
 
 describe('audit example', () => {
   it('open browser', async () => {
@@ -57,8 +57,8 @@ If you don't provide any threshold argument to the `playAudit` command, the test
 You can make assumptions on the different metrics by passing an object as argument to the `playAudit` command:
 
 ```javascript
-import { playAudit } from 'playwright-lighthouse'
-import playwright from 'playwright'
+import { playAudit } from 'playwright-lighthouse';
+import playwright from 'playwright';
 
 describe('audit example', () => {
   it('open browser', async () => {
@@ -160,9 +160,9 @@ await playAudit({
 Playwright by default does not share any context (eg auth state) between pages. Lighthouse will open a new page and thus any previous authentication steps are void. To persist auth state you need to use a persistent context:
 
 ```js
-import os from 'os'
-import { playAudit } from 'playwright-lighthouse'
-import { chromium } from 'playwright'
+import os from 'os';
+import { playAudit } from 'playwright-lighthouse';
+import { chromium } from 'playwright';
 
 describe('audit example', () => {
   it('open browser', async () => {
@@ -421,33 +421,37 @@ const lighthouseReport = await playAudit({
 ```
 
 ## Generating Lighthouse reports on LambdaTest
+
 You can execute Lighthouse reports on LambdaTest platform while executing Playwright tests with the following steps. You can generate multiple lighthouse reports in a single test.
 
 #### Install playwright-lighthouse library
+
 ```sh
 npm install playwright-lighthouse
 ```
 
 #### Export the LIGTHHOUSE_LAMBDATEST environment variable to your project environment
+
 ```sh
 export LIGHTHOUSE_LAMBDATEST='true'
 ```
 
 #### Sample script
+
 ```js
-import { chromium } from "playwright";
-import { playAudit } from "playwright-lighthouse";
+import { chromium } from 'playwright';
+import { playAudit } from 'playwright-lighthouse';
 
 (async () => {
   let browser, page;
   try {
     const capabilities = {
-      browserName: "Chrome", // Browsers allowed: `Chrome`, `MicrosoftEdge` and `pw-chromium`
-      browserVersion: "latest",
-      "LT:Options": {
-        platform: "Windows 11",
-        build: "Web Performance testing",
-        name: "Lighthouse test",
+      browserName: 'Chrome', // Browsers allowed: `Chrome`, `MicrosoftEdge` and `pw-chromium`
+      browserVersion: 'latest',
+      'LT:Options': {
+        platform: 'Windows 11',
+        build: 'Web Performance testing',
+        name: 'Lighthouse test',
         user: process.env.LT_USERNAME,
         accessKey: process.env.LT_ACCESS_KEY,
         network: true,
@@ -457,25 +461,25 @@ import { playAudit } from "playwright-lighthouse";
     };
 
     browser = await chromium.connect({
-      wsEndpoint: `wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`
+      wsEndpoint: `wss://cdp.lambdatest.com/playwright?capabilities=${encodeURIComponent(JSON.stringify(capabilities))}`,
     });
 
     page = await browser.newPage();
 
-    await page.goto("https://duckduckgo.com");
+    await page.goto('https://duckduckgo.com');
     let element = await page.locator('[name="q"]');
     await element.click();
-    await element.type("Playwright");
-    await element.press("Enter");
+    await element.type('Playwright');
+    await element.press('Enter');
 
     try {
       await playAudit({
-        url: "https://duckduckgo.com",
+        url: 'https://duckduckgo.com',
         page: page,
         thresholds: {
           performance: 50,
           accessibility: 50,
-          "best-practices": 50,
+          'best-practices': 50,
           seo: 50,
           pwa: 10,
         },
@@ -488,16 +492,22 @@ import { playAudit } from "playwright-lighthouse";
         },
       });
 
-      await page.evaluate((_) => {},
-      `lambdatest_action: ${JSON.stringify({ action: "setTestStatus", arguments: { status: "passed", remark: "Web performance metrics are are above the thresholds." } })}`);
+      await page.evaluate(
+        (_) => {},
+        `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'passed', remark: 'Web performance metrics are are above the thresholds.' } })}`
+      );
     } catch (e) {
-      await page.evaluate((_) => {},
-      `lambdatest_action: ${JSON.stringify({ action: "setTestStatus", arguments: { status: "failed", remark: e.stack } })}`);
+      await page.evaluate(
+        (_) => {},
+        `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`
+      );
       console.error(e);
     }
   } catch (e) {
-    await page.evaluate((_) => {},
-    `lambdatest_action: ${JSON.stringify({ action: "setTestStatus", arguments: { status: "failed", remark: e.stack } })}`);
+    await page.evaluate(
+      (_) => {},
+      `lambdatest_action: ${JSON.stringify({ action: 'setTestStatus', arguments: { status: 'failed', remark: e.stack } })}`
+    );
   } finally {
     await page.close();
     await browser.close();
@@ -506,6 +516,7 @@ import { playAudit } from "playwright-lighthouse";
 ```
 
 #### Viewing test results
+
 You can view your tests on [LambdaTest Web Automation dashboard](https://automation.lambdatest.com).
 
 ![Lighthouse report on LambdaTest](./docs/LambdaTest_Playwright_LighthouseReport.png)

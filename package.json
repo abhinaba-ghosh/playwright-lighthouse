@@ -1,6 +1,6 @@
 {
   "name": "playwright-lighthouse",
-  "version": "3.2.6",
+  "version": "4.0.0",
   "description": "Playwright Lighthouse Audit",
   "main": "index.js",
   "type": "module",

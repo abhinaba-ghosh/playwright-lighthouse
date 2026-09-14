@@ -436,7 +436,7 @@ You can execute Lighthouse reports on LambdaTest platform while executing Playwr
 npm install playwright-lighthouse
 ```
 
-#### Export the LIGTHHOUSE_LAMBDATEST environment variable to your project environment
+#### Export the LIGHTHOUSE_LAMBDATEST environment variable to your project environment
 
 ```sh
 export LIGHTHOUSE_LAMBDATEST='true'
